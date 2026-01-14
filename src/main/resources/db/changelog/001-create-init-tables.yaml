@@ -1,0 +1,174 @@
+databaseChangeLog:
+  - changeSet:
+      id: 001
+      author: Agshin Nadirov
+
+      changes:
+        - createTable:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: username
+                  type: varchar(20)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: email
+                  type: varchar(120)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: password
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: role
+                  type: varchar(20)
+                  constraints:
+                    nullable: false
+        - createTable:
+            tableName: categories
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: user_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: category_name
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: date
+                  constraints:
+                    nullable: false
+        - createTable:
+            tableName: recurring_expenses
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: user_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    unique: false
+              - column:
+                  name: category_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    unique: false
+              - column:
+                  name: amount
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    unique: false
+
+              - column:
+                  name: description
+                  type: text
+                  constraints:
+                    nullable: true
+                    unique: false
+              - column:
+                  name: frequency
+                  type: varchar(30)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: start_date
+                  type: datetime
+                  constraints:
+                    nullable: false
+              - column:
+                  name: end_date
+                  type: datetime
+                  constraints:
+                    nullable: false
+        - createTable:
+            tableName: exchange_rates
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: base_currency
+                  type: varchar(5)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: quote_currency
+                  type: varchar(5)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: rate
+                  type: decimal
+                  constraints:
+                    nullable: false
+              - column:
+                  name: fetched_at
+                  type: datetime
+                  constraints:
+                    nullable: false
+
+
+        # addForeignKeyConstraint
+        # Creates a foreign key rule in the database.
+        # baseTableName
+        # Child table (the one that depends on another table).
+        # baseColumnNames
+        # Column that stores the reference (foreign key).
+        # referencedTableName
+        # Parent table being referenced.
+        # referencedColumnNames
+        #Column in parent table (usually PRIMARY KEY).
+        # constraintName
+        # Explicit name for easier maintenance and debugging.
+
+        - addForeignKeyConstraint:
+            baseTableName: categories
+            baseColumnNames: user_id
+            referencedTableName: users
+            referencedColumnNames: id
+            constraintName: fk_categories_users
+
+        - addForeignKeyConstraint:
+            baseTableName: recurring_expenses
+            baseColumnNames: user_id
+            referencedTableName: users
+            referencedColumnNames: id
+            constraintName: fk_recurring_expenses_users
+
+        - addForeignKeyConstraint:
+            baseTableName: recurring_expenses
+            baseColumnNames: category_id
+            referencedTableName: categories
+            referencedColumnNames: id
+            constraintName: fk_recurring_expenses_categories

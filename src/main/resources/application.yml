@@ -2,15 +2,33 @@ spring:
   application:
     name: ext-app
 
+    # Liquibase
+  liquibase:
+    enabled: true
+    change-log: classpath:/db/changelog/db.changelog-master.yaml
 
 
-# Now using H2 db, later change to mysql
+
+  # Now using H2 db, later change to mysql
+  datasource:
+    url: jdbc:mysql://localhost:3306/ext-app
+    username: root
+    password:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+
 #  datasource:
-#    url: jdbc:mysql://localhost:3306/app_db
-#    username: root
-#    password: password
-#    driver-class-name: com.mysql.cj.jdbc.Driver
-#
-#  jpa:
-#    hibernate:
-#      ddl-auto: update
+#    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1
+#    driver-class-name: org.h2.Driver
+#    username: a
+#    password:
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+
+
+logging:
+  level:
+    liquibase: INFO
