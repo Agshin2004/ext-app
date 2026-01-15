@@ -1,0 +1,19 @@
+databaseChangeLog:
+  - changeSet:
+      id: 002-add-registration-status-column-to-users.yaml
+      author: admin
+      changes:
+        - addColumn:
+            tableName: users
+            columns:
+              - column:
+                  name: registration_status
+                  type: varchar(20)
+                  constraints:
+                    nullable: false
+
+
+      rollback:
+        - dropColumn:
+            tableName: users
+            columnName: registration_status

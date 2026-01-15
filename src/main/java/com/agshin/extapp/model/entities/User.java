@@ -1,20 +1,30 @@
 package com.agshin.extapp.model.entities;
 
 import com.agshin.extapp.model.enums.RegistrationStatus;
-import com.agshin.extapp.model.enums.Roles;
+import com.agshin.extapp.model.enums.Role;
 import jakarta.persistence.*;
 
 @Entity
+@Table(name = "users")
 public class User {
+    public User() {
+    }
+
+    public User(String username, String email, String password, Role role, RegistrationStatus registrationStatus) {
+        this.username = username;
+        this.email = email;
+        this.password = password;
+    }
+
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column(name = "username")
+    @Column(name = "username", unique = true, nullable = false)
     private String username;
 
-    @Column(name = "email")
+    @Column(name = "email", unique = true, nullable = false)
     private String email;
 
     @Column(name = "password")
@@ -22,11 +32,12 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "role")
-    private Roles role = Roles.USER;
+    private Role role = Role.USER;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "registration_status")
     private RegistrationStatus registrationStatus = RegistrationStatus.INACTIVE;
+
 
     public String getUsername() {
         return username;
@@ -52,11 +63,11 @@ public class User {
         this.password = password;
     }
 
-    public Roles getRole() {
+    public Role getRole() {
         return role;
     }
 
-    public void setRole(Roles role) {
+    public void setRole(Role role) {
         this.role = role;
     }
 
