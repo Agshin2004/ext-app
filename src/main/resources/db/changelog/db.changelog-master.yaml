@@ -3,4 +3,5 @@ databaseChangeLog:
       file: db/changelog/001-create-init-tables.yaml
   - include:
       file: db/changelog/002-add-registration-status-column-to-users.yaml
-
+  - include:
+      file: db/changelog/003-alter-users-password-length.yaml

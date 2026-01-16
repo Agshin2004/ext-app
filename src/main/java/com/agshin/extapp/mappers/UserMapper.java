@@ -19,5 +19,6 @@ public interface UserMapper {
     void updateEntity(CreateUserRequest request, @MappingTarget User user);
 
 //    @Mapping(target = "role", expression = "java(user.getRole().name())")
-    UserResponse toResponse(User user);
+    @Mapping(target = "jwt", source = "jwt")
+    UserResponse toResponse(User user, String jwt);
 }

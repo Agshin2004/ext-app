@@ -7,6 +7,13 @@ import jakarta.persistence.*;
 @Entity
 @Table(name = "users")
 public class User {
+    public static final String USER_ID = "id";
+    public static final String USERNAME = "username";
+    public static final String EMAIL = "email";
+    public static final String ROLE = "role";
+    public static final String REGISTRATION_STATUS = "registration_status";
+
+
     public User() {
     }
 

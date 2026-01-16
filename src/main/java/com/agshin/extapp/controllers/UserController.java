@@ -31,4 +31,6 @@ public class UserController {
 
         return ResponseEntity.status(HttpStatus.CREATED.value()).body(genericResponse);
     }
+
+
 }

@@ -34,3 +34,8 @@ logging:
 
 server:
   port: 8090
+
+app:
+  jwt:
+    secret: change-me-in-production-environment
+    refreshExpiration: 36000000 # 10 Hours
