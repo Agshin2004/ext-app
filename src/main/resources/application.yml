@@ -8,7 +8,6 @@ spring:
     change-log: classpath:/db/changelog/db.changelog-master.yaml
 
 
-  # Now using H2 db, later change to mysql
   datasource:
     url: jdbc:mysql://localhost:3306/ext-app
     username: root
