@@ -13,8 +13,8 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE // do not override existing values with null
 )
 public interface UserMapper {
-    @Mapping(target = "id", ignore = true)
-    User toEntity(CreateUserRequest request);
+    @Mapping(target = "password", source = "encodedPassword")
+    User toEntity(String email, String username, String encodedPassword);
 
     void updateEntity(CreateUserRequest request, @MappingTarget User user);
 
