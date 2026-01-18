@@ -14,6 +14,18 @@ spring:
     password:
     driver-class-name: com.mysql.cj.jdbc.Driver
 
+# TODO: could not put in application-dev.yml
+  mail:
+    host: sandbox.smtp.mailtrap.io
+    port: 587
+    username: ${MAILTRAP_USERNAME}
+    password: ${MAILTRAP_PASSWORD}
+    properties:
+      mail:
+        SMTP:
+          auth: true
+          STARTTLS:
+            enabled: true
 
 #  datasource:
 #    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1
@@ -38,3 +50,5 @@ app:
   jwt:
     secret: change-me-in-production-environment
     refreshExpiration: 36000000 # 10 Hours
+  frontend:
+    password-reset-url: localhost:3000/password/reset

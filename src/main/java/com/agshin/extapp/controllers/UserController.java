@@ -2,6 +2,7 @@ package com.agshin.extapp.controllers;
 
 import com.agshin.extapp.model.constants.ApplicationConstants;
 import com.agshin.extapp.model.request.user.CreateUserRequest;
+import com.agshin.extapp.model.request.user.ForgotPasswordRequest;
 import com.agshin.extapp.model.request.user.SignInUserRequest;
 import com.agshin.extapp.model.response.GenericResponse;
 import com.agshin.extapp.model.response.user.UserResponse;
@@ -45,5 +46,10 @@ public class UserController {
 
         return ResponseEntity.status(HttpStatus.CREATED.value()).body(genericResponse);
     }
+
+    // generate token, send email
+//    public ResponseEntity<?> forgotPassword(@Valid @RequestBody ForgotPasswordRequest request) {
+//        userService.forgotPassword(request.email());
+//    }
 
 }
