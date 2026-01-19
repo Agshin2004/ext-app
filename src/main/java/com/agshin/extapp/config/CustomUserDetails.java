@@ -17,6 +17,7 @@ public class CustomUserDetails implements UserDetails {
     private final String email;
     private final Role role;
     private final RegistrationStatus registrationStatus;
+    private final User user;
 
     public CustomUserDetails(User user) {
         this.id = user.getId();
@@ -24,11 +25,16 @@ public class CustomUserDetails implements UserDetails {
         this.email = user.getEmail();
         this.role = user.getRole();
         this.registrationStatus = user.getRegistrationStatus();
+        this.user = user;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
+    }
+
+    public User getUser() {
+        return user;
     }
 
     @Override

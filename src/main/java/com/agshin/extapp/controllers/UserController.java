@@ -1,5 +1,6 @@
 package com.agshin.extapp.controllers;
 
+import com.agshin.extapp.config.CustomUserDetails;
 import com.agshin.extapp.model.constants.ApplicationConstants;
 import com.agshin.extapp.model.request.user.CreateUserRequest;
 import com.agshin.extapp.model.request.user.ForgotPasswordRequest;
@@ -11,6 +12,8 @@ import com.agshin.extapp.services.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -41,18 +44,21 @@ public class UserController {
 
     @PostMapping("/sign-in")
     public ResponseEntity<GenericResponse<UserResponse>> signIn(@Valid @RequestBody SignInUserRequest request) {
-        UserResponse userResponse = userService.getJwtForCreds(request.email(), request.password());
-
-        var genericResponse = GenericResponse.create(ApplicationConstants.SUCCESS, userResponse, HttpStatus.OK.value());
-
-        return ResponseEntity.status(HttpStatus.CREATED.value()).body(genericResponse);
+        throw new RuntimeException("W");
+//        UserResponse userResponse = userService.getJwtForCreds(request.email(), request.password());
+//
+//        var genericResponse = GenericResponse.create(ApplicationConstants.SUCCESS, userResponse, HttpStatus.OK.value());
+//
+//        return ResponseEntity.status(HttpStatus.CREATED.value()).body(genericResponse);
     }
 
     // generate token, send email
     @PostMapping("/forgot-password")
-    public ResponseEntity<GenericResponse<Void>> forgotPassword(@Valid @RequestBody ForgotPasswordRequest request) {
-        // TODO: take from currently authenticated user
-        userService.forgotPassword(request.email());
+    public ResponseEntity<GenericResponse<Void>> forgotPassword(
+            @Valid @RequestBody ForgotPasswordRequest request,
+            @AuthenticationPrincipal CustomUserDetails userDetails
+            ) {
+        userService.forgotPassword(userDetails.getEmail());
 
         GenericResponse<Void> response = GenericResponse.create(
                 ApplicationConstants.SUCCESS,
@@ -65,6 +71,7 @@ public class UserController {
 
     @PostMapping("/reset-password")
     public ResponseEntity<GenericResponse<Void>> resetPassword(@RequestBody ResetPasswordRequest request) {
+
         userService.resetPassword(request.rawToken(), request.newPassword());
 
         GenericResponse<Void> response = GenericResponse.create(
