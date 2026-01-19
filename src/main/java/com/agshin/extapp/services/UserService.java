@@ -71,8 +71,6 @@ public class UserService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new DataNotFoundException("User with email not found: " + email));
 
-        emailService.sendPasswordResetEmail("nadirov.main@gmail.com", "hello");
-
         if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new UnauthorizedException("Passwords do not match");
         }
@@ -91,6 +89,7 @@ public class UserService {
                     PasswordResetToken token = new PasswordResetToken();
                     token.setTokenHash(tokenHash);
                     token.setExpiresAt(Instant.now().plus(1, ChronoUnit.HOURS));
+                    token.setUser(user);
                     tokenRepository.save(token);
 
                     emailService.sendPasswordResetEmail(
