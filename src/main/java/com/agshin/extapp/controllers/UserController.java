@@ -3,6 +3,7 @@ package com.agshin.extapp.controllers;
 import com.agshin.extapp.model.constants.ApplicationConstants;
 import com.agshin.extapp.model.request.user.CreateUserRequest;
 import com.agshin.extapp.model.request.user.ForgotPasswordRequest;
+import com.agshin.extapp.model.request.user.ResetPasswordRequest;
 import com.agshin.extapp.model.request.user.SignInUserRequest;
 import com.agshin.extapp.model.response.GenericResponse;
 import com.agshin.extapp.model.response.user.UserResponse;
@@ -48,8 +49,31 @@ public class UserController {
     }
 
     // generate token, send email
-//    public ResponseEntity<?> forgotPassword(@Valid @RequestBody ForgotPasswordRequest request) {
-//        userService.forgotPassword(request.email());
-//    }
+    @PostMapping("/forgot-password")
+    public ResponseEntity<GenericResponse<Void>> forgotPassword(@Valid @RequestBody ForgotPasswordRequest request) {
+        // TODO: take from currently authenticated user
+        userService.forgotPassword(request.email());
 
+        GenericResponse<Void> response = GenericResponse.create(
+                ApplicationConstants.SUCCESS,
+                null,
+                HttpStatus.OK.value()
+        );
+
+        return ResponseEntity.status(HttpStatus.OK.value()).body(response);
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<GenericResponse<Void>> resetPassword(@RequestBody ResetPasswordRequest request) {
+        userService.resetPassword(request.rawToken(), request.newPassword());
+
+        GenericResponse<Void> response = GenericResponse.create(
+                ApplicationConstants.SUCCESS,
+                null,
+                HttpStatus.OK.value()
+        );
+
+        return ResponseEntity.status(HttpStatus.OK.value()).body(response);
+
+    }
 }

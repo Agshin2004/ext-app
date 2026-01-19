@@ -2,6 +2,7 @@ package com.agshin.extapp.services;
 
 import com.agshin.extapp.exceptions.DataExistsException;
 import com.agshin.extapp.exceptions.DataNotFoundException;
+import com.agshin.extapp.exceptions.InvalidTokenException;
 import com.agshin.extapp.exceptions.UnauthorizedException;
 import com.agshin.extapp.mappers.UserMapper;
 import com.agshin.extapp.model.entities.PasswordResetToken;
@@ -29,12 +30,20 @@ public class UserService {
     private final EmailService emailService;
     private PasswordResetTokenRepository tokenRepository;
 
-    public UserService(UserRepository userRepository, UserMapper userMapper, JwtUtils jwtUtils, PasswordEncoder passwordEncoder, EmailService emailService) {
+    public UserService(
+            UserRepository userRepository,
+            UserMapper userMapper,
+            JwtUtils jwtUtils,
+            PasswordEncoder passwordEncoder,
+            EmailService emailService,
+            PasswordResetTokenRepository tokenRepository
+    ) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.userMapper = userMapper;
         this.jwtUtils = jwtUtils;
         this.emailService = emailService;
+        this.tokenRepository = tokenRepository;
     }
 
     public UserResponse createUser(String email, String username, String password) {
@@ -84,6 +93,27 @@ public class UserService {
                     token.setExpiresAt(Instant.now().plus(1, ChronoUnit.HOURS));
                     tokenRepository.save(token);
 
+                    emailService.sendPasswordResetEmail(
+                            user.getEmail(),
+                            rawToken
+                    );
                 });
+    }
+
+    public void resetPassword(String rawToken, String newPassword) {
+        PasswordResetToken token = tokenRepository
+                .findValidTokens(Instant.now())
+                .stream()
+                .filter(t -> passwordEncoder.matches(rawToken, t.getTokenHash()))
+                .findFirst()
+                .orElseThrow(() -> new InvalidTokenException("Invalid token"));
+
+        User user = token.getUser();
+        user.setPassword(passwordEncoder.encode(newPassword));
+
+        token.setUsed(true);
+
+        userRepository.save(user);
+        tokenRepository.save(token);
     }
 }

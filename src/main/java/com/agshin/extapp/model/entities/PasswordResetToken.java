@@ -13,14 +13,27 @@ public class PasswordResetToken {
     @Column(length = 36, nullable = false, updatable = false)
     private String id;
 
-    @Column(nullable = false)
-    private Long userId;
+    // optional -maps to nullability in the object model >> entity cannot exist without user
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     @Column(name = "token_hash", length = 120, nullable = false, unique = true)
     private String tokenHash;
 
     @Column(nullable = false)
     private Instant expiresAt;
+
+    @Column(nullable = false)
+    private boolean used = false;
+
+    public boolean isUsed() {
+        return used;
+    }
+
+    public void setUsed(boolean used) {
+        this.used = used;
+    }
 
     @PrePersist
     protected void onCreate() {
@@ -37,12 +50,12 @@ public class PasswordResetToken {
         this.id = id;
     }
 
-    public Long getUserId() {
-        return userId;
+    public User getUser() {
+        return user;
     }
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public String getTokenHash() {
