@@ -1,10 +1,12 @@
 package com.agshin.extapp.config;
 
 import com.agshin.extapp.filters.AdminFilter;
+import com.agshin.extapp.filters.IsUserApprovedFilter;
 import com.agshin.extapp.filters.JwtRequestFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -20,6 +22,8 @@ public class SecurityConfig {
     private JwtRequestFilter jwtRequestFilter;
     @Autowired
     private AdminFilter adminFilter;
+    @Autowired
+    private IsUserApprovedFilter userApprovedFilter;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -36,7 +40,14 @@ public class SecurityConfig {
                         .requestMatchers("/users/sign-up").permitAll()
                         .anyRequest().authenticated()
                 ).addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(adminFilter, AuthenticationFilter.class);
+                .addFilterAfter(userApprovedFilter, JwtRequestFilter.class)
+                .addFilterAfter(adminFilter, IsUserApprovedFilter.class)
+                .exceptionHandling(exception -> exception
+                        .accessDeniedHandler((request, response, accessDeniedException) -> {
+                            response.setContentType("application/json");
+                            response.setStatus(HttpStatus.FORBIDDEN.value());
+                            response.getWriter().write("{\"Message\"" + accessDeniedException.getMessage() + "\"}");
+                        }));
 
         return http.build();
     }

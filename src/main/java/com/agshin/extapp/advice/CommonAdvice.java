@@ -1,5 +1,6 @@
 package com.agshin.extapp.advice;
 
+import com.agshin.extapp.exceptions.UnauthorizedException;
 import com.agshin.extapp.model.constants.ApplicationConstants;
 import com.agshin.extapp.model.response.GenericResponse;
 import org.slf4j.Logger;
@@ -13,6 +14,13 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 public class CommonAdvice {
     private static final Logger log = LoggerFactory.getLogger(CommonAdvice.class);
 
+
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<GenericResponse<String>> handleUnauthorizedException(UnauthorizedException ex) {
+        var response = GenericResponse.create(ApplicationConstants.SUCCESS, ex.getMessage(), HttpStatus.UNAUTHORIZED.value());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(response);
+    }
 
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<GenericResponse<String>> handleException(RuntimeException ex) {
