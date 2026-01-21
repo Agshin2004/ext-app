@@ -7,3 +7,5 @@ databaseChangeLog:
       file: db/changelog/003-alter-users-password-length.yaml
   - include:
       file: db/changelog/004-create-password-reset-token-table.yaml
+  - include:
+      file: db/changelog/005-create-expenses-table.yaml

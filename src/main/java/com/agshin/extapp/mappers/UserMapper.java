@@ -1,5 +1,6 @@
 package com.agshin.extapp.mappers;
 
+import com.agshin.extapp.model.dto.user.UserDto;
 import com.agshin.extapp.model.entities.User;
 import com.agshin.extapp.model.request.user.CreateUserRequest;
 import com.agshin.extapp.model.response.user.UserResponse;
@@ -18,7 +19,9 @@ public interface UserMapper {
 
     void updateEntity(CreateUserRequest request, @MappingTarget User user);
 
-//    @Mapping(target = "role", expression = "java(user.getRole().name())")
+    UserDto toDto(User user);
+
+//    @Mapping(target = "role", expression = "java(user.getRole().categoryName())")
     @Mapping(target = "jwt", source = "jwt")
     UserResponse toResponse(User user, String jwt);
 }

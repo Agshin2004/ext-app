@@ -1,5 +1,6 @@
 package com.agshin.extapp.advice;
 
+import com.agshin.extapp.exceptions.DataExistsException;
 import com.agshin.extapp.exceptions.UnauthorizedException;
 import com.agshin.extapp.model.constants.ApplicationConstants;
 import com.agshin.extapp.model.response.GenericResponse;
@@ -22,9 +23,19 @@ public class CommonAdvice {
                 .body(response);
     }
 
+    @ExceptionHandler(DataExistsException.class)
+    public ResponseEntity<GenericResponse<String>> handleDataExistsException(DataExistsException ex) {
+        var response = GenericResponse.create(ApplicationConstants.SUCCESS, ex.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY.value());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(response);
+    }
+
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<GenericResponse<String>> handleException(RuntimeException ex) {
         var response = GenericResponse.create(ApplicationConstants.ERROR, "server error", HttpStatus.INTERNAL_SERVER_ERROR.value());
+
+        log.info(ex.getMessage());
+
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(response);

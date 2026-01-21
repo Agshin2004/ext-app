@@ -150,7 +150,7 @@ databaseChangeLog:
         # referencedColumnNames
         #Column in parent table (usually PRIMARY KEY).
         # constraintName
-        # Explicit name for easier maintenance and debugging.
+        # Explicit categoryName for easier maintenance and debugging.
 
         - addForeignKeyConstraint:
             baseTableName: categories

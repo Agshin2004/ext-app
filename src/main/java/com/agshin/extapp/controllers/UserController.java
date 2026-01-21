@@ -44,12 +44,15 @@ public class UserController {
 
     @PostMapping("/sign-in")
     public ResponseEntity<GenericResponse<UserResponse>> signIn(@Valid @RequestBody SignInUserRequest request) {
-        throw new RuntimeException("W");
-//        UserResponse userResponse = userService.getJwtForCreds(request.email(), request.password());
-//
-//        var genericResponse = GenericResponse.create(ApplicationConstants.SUCCESS, userResponse, HttpStatus.OK.value());
-//
-//        return ResponseEntity.status(HttpStatus.CREATED.value()).body(genericResponse);
+        UserResponse userResponse = userService.getJwtForCreds(request.email(), request.password());
+
+        var genericResponse = GenericResponse.create(
+                ApplicationConstants.SUCCESS,
+                userResponse,
+                HttpStatus.OK.value()
+        );
+
+        return ResponseEntity.status(HttpStatus.CREATED.value()).body(genericResponse);
     }
 
     // generate token, send email
@@ -57,7 +60,7 @@ public class UserController {
     public ResponseEntity<GenericResponse<Void>> forgotPassword(
             @Valid @RequestBody ForgotPasswordRequest request,
             @AuthenticationPrincipal CustomUserDetails userDetails
-            ) {
+    ) {
         userService.forgotPassword(userDetails.getEmail());
 
         GenericResponse<Void> response = GenericResponse.create(
