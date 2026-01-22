@@ -30,7 +30,6 @@ public class CategoryController {
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "true") boolean asc,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
-
         CategoryResponse categoriesForUser = categoryService.getCategoriesForUser(
                 userDetails.getUser(),
                 page,
