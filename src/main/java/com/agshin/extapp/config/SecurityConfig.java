@@ -3,6 +3,7 @@ package com.agshin.extapp.config;
 import com.agshin.extapp.filters.AdminFilter;
 import com.agshin.extapp.filters.IsUserApprovedFilter;
 import com.agshin.extapp.filters.JwtRequestFilter;
+import org.hibernate.cfg.Environment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,6 +30,7 @@ public class SecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {

@@ -20,6 +20,6 @@ public interface CategoryMapper {
         return category;
     }
 
-    @Mapping(target = "user", source = "user") // mapstruct will call UserMapper.toDto
+    @Mapping(target = "user", source = "user") // mapstruct will call UserMapper.toDto because signatures match User > UserDto
     CategoryDto toDto(Category category);
 }

@@ -4,15 +4,15 @@ import com.agshin.extapp.config.CustomUserDetails;
 import com.agshin.extapp.model.constants.ApplicationConstants;
 import com.agshin.extapp.model.dto.category.CategoryDto;
 import com.agshin.extapp.model.request.category.CreateCategoryRequest;
+import com.agshin.extapp.model.request.category.UpdateCategoryRequest;
 import com.agshin.extapp.model.response.GenericResponse;
 import com.agshin.extapp.services.CategoryService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/categories")
@@ -23,11 +23,14 @@ public class CategoryController {
         this.categoryService = categoryService;
     }
 
+//    public ResponseEntity<GenericResponse<List<CategoryDto>>> getUserCategories() {
+//
+//    }
+
     @PostMapping
     public ResponseEntity<GenericResponse<CategoryDto>> createCategory(
             @RequestBody CreateCategoryRequest request,
-            @AuthenticationPrincipal CustomUserDetails userDetails
-    ) {
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
         CategoryDto category = categoryService.createCategory(request.categoryName(), userDetails.getUser());
 
         var response = GenericResponse.create(
@@ -37,5 +40,20 @@ public class CategoryController {
         );
 
         return ResponseEntity.status(HttpStatus.CREATED.value()).body(response);
+    }
+
+    @PatchMapping
+    public ResponseEntity<GenericResponse<CategoryDto>> updateCategory(
+            @RequestBody UpdateCategoryRequest request,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        CategoryDto categoryDto = categoryService.updateCategory(request.categoryName(), userDetails.getUser().getId());
+
+        var response = GenericResponse.create(
+                ApplicationConstants.SUCCESS,
+                categoryDto,
+                HttpStatus.CREATED.value()
+        );
+
+        return ResponseEntity.status(HttpStatus.OK.value()).body(response);
     }
 }
