@@ -1,5 +1,6 @@
 package com.agshin.extapp.advice;
 
+import com.agshin.extapp.exceptions.AuthorizationDeniedException;
 import com.agshin.extapp.exceptions.DataExistsException;
 import com.agshin.extapp.exceptions.UnauthorizedException;
 import com.agshin.extapp.model.constants.ApplicationConstants;
@@ -31,7 +32,6 @@ public class CommonAdvice {
     }
 
 
-
     private String getMessage(Exception ex) {
         return isDev() ? ex.getMessage() : "Server error";
     }
@@ -59,17 +59,26 @@ public class CommonAdvice {
                 HttpStatus.CONFLICT.value()
         );
 
-        return ResponseEntity.status(HttpStatus.CONFLICT.value()).body(response
+        return ResponseEntity.status(HttpStatus.CONFLICT.value()).body(response);
+    }
+
+    @ExceptionHandler(AuthorizationDeniedException.class)
+    public ResponseEntity<GenericResponse<String>> handleAuthorizationDeniedException(AuthorizationDeniedException ex) {
+        var response = GenericResponse.create(
+                ApplicationConstants.ERROR,
+                getMessage(ex),
+                HttpStatus.UNAUTHORIZED.value()
         );
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED.value()).body(response);
     }
 
     @ExceptionHandler({RuntimeException.class, Exception.class})
     public ResponseEntity<GenericResponse<String>> handleException(RuntimeException ex) {
-        log.info("Exception: {}\nException Class: {}", ex.getMessage(), ex.getClass().getName());
-
         var response = GenericResponse.create(ApplicationConstants.ERROR, "server error", HttpStatus.INTERNAL_SERVER_ERROR.value());
 
         log.info(ex.getMessage());
+        log.error("e: ", ex);
 
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)

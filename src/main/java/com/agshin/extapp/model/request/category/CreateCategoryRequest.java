@@ -1,4 +1,6 @@
 package com.agshin.extapp.model.request.category;
 
-public record CreateCategoryRequest(String categoryName) {
+import jakarta.validation.constraints.NotNull;
+
+public record CreateCategoryRequest(@NotNull String categoryName) {
 }
