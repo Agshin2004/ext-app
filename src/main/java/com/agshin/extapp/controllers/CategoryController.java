@@ -79,5 +79,15 @@ public class CategoryController {
         return ResponseEntity.status(HttpStatus.OK.value()).body(response);
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<GenericResponse<Void>> deleteCategory(
+            @PathVariable("id") Long id,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        categoryService.deleteCategory(id, userDetails.getUser());
+
+        GenericResponse<Void> response = GenericResponse.create(ApplicationConstants.SUCCESS, null, HttpStatus.NO_CONTENT.value());
+
+        return ResponseEntity.status(HttpStatus.NO_CONTENT.value()).body(response);
+    }
 
 }

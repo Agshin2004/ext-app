@@ -78,4 +78,16 @@ public class CategoryService {
 
         return new CategoryResponse(list, byUserId.getNumber(), byUserId.getTotalElements(), byUserId.getTotalPages());
     }
+
+    public void deleteCategory(Long id, User user) {
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() -> new DataNotFoundException("Category with this ID not found"));
+
+        if (! Objects.equals(category.getUser().getId(), user.getId())) {
+            logger.warn("User with ID: {} is trying to delete category they dont own. Category ID: {}", user.getId(), id);
+            throw new AuthorizationDeniedException("You don't own this category");
+        }
+
+        categoryRepository.delete(category);
+    }
 }
