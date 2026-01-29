@@ -52,3 +52,10 @@ app:
     refreshExpiration: 36000000 # 10 Hours
   frontend:
     password-reset-url: localhost:3000/password/reset
+
+  title:
+    ext-app
+  description:
+    Expenses Tracker APP
+  version:
+    1.0.0
