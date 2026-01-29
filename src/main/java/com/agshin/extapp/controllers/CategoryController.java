@@ -56,7 +56,8 @@ public class CategoryController {
                 HttpStatus.CREATED.value()
         );
 
-        return ResponseEntity.status(HttpStatus.CREATED.value()).body(response);
+        return ResponseEntity.status(HttpStatus.CREATED.value())
+                .body(response);
     }
 
     @PatchMapping("/{id}")
@@ -76,7 +77,8 @@ public class CategoryController {
                 HttpStatus.CREATED.value()
         );
 
-        return ResponseEntity.status(HttpStatus.OK.value()).body(response);
+        return ResponseEntity.status(HttpStatus.OK.value())
+                .body(response);
     }
 
     @DeleteMapping("/{id}")
@@ -87,7 +89,8 @@ public class CategoryController {
 
         GenericResponse<Void> response = GenericResponse.create(ApplicationConstants.SUCCESS, null, HttpStatus.NO_CONTENT.value());
 
-        return ResponseEntity.status(HttpStatus.NO_CONTENT.value()).body(response);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT.value())
+                .body(response);
     }
 
 }
