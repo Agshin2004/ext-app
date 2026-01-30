@@ -3,17 +3,17 @@ package com.agshin.extapp.controllers;
 import com.agshin.extapp.config.CustomUserDetails;
 import com.agshin.extapp.model.constants.ApplicationConstants;
 import com.agshin.extapp.model.dto.category.CategoryDto;
-import com.agshin.extapp.model.entities.Category;
 import com.agshin.extapp.model.request.category.CreateCategoryRequest;
 import com.agshin.extapp.model.request.category.UpdateCategoryRequest;
 import com.agshin.extapp.model.response.GenericResponse;
-import com.agshin.extapp.model.response.category.CategoryResponse;
+import com.agshin.extapp.model.dto.expense.PagedResponse;
 import com.agshin.extapp.services.CategoryService;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/categories")
@@ -25,13 +25,13 @@ public class CategoryController {
     }
 
     @GetMapping
-    public ResponseEntity<GenericResponse<CategoryResponse>> getUserCategories(
+    public ResponseEntity<GenericResponse<PagedResponse<List<CategoryDto>>>> getUserCategories(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "true") boolean asc,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
-
-        CategoryResponse categoriesForUser = categoryService.getCategoriesForUser(
+        // todo: use AuthService
+        PagedResponse<List<CategoryDto>> categoriesForUser = categoryService.getCategoriesForUser(
                 userDetails.getUser(),
                 page,
                 size,
@@ -39,6 +39,7 @@ public class CategoryController {
         );
 
         var response = GenericResponse.create(ApplicationConstants.SUCCESS, categoriesForUser, HttpStatus.OK.value());
+
         return ResponseEntity
                 .status(HttpStatus.OK.value())
                 .body(response);

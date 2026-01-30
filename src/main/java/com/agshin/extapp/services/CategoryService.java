@@ -7,7 +7,7 @@ import com.agshin.extapp.mappers.CategoryMapper;
 import com.agshin.extapp.model.dto.category.CategoryDto;
 import com.agshin.extapp.model.entities.Category;
 import com.agshin.extapp.model.entities.User;
-import com.agshin.extapp.model.response.category.CategoryResponse;
+import com.agshin.extapp.model.dto.expense.PagedResponse;
 import com.agshin.extapp.repositories.CategoryRepository;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
@@ -24,11 +24,11 @@ import java.util.Objects;
 public class CategoryService {
     Logger logger = LoggerFactory.getLogger(CategoryService.class);
 
-    private final CategoryMapper mapper;
+    private final CategoryMapper categoryMapper;
     private final CategoryRepository categoryRepository;
 
     public CategoryService(CategoryMapper mapper, CategoryRepository categoryRepository, CategoryMapper categoryMapper) {
-        this.mapper = mapper;
+        this.categoryMapper = mapper;
         this.categoryRepository = categoryRepository;
     }
 
@@ -40,11 +40,11 @@ public class CategoryService {
                     return new DataExistsException("Category with this name already exists");
                 });
 
-        Category category = mapper.toEntity(categoryName, user);
+        Category category = categoryMapper.toEntity(categoryName, user);
 
         categoryRepository.save(category);
         logger.info("Successfully updated category ID: {} to Name: {}", category.getId(), categoryName);
-        return mapper.toDto(category);
+        return categoryMapper.toDto(category);
     }
 
     @Transactional
@@ -60,10 +60,10 @@ public class CategoryService {
         category.setCategoryName(categoryName);
         categoryRepository.save(category);
 
-        return mapper.toDto(category);
+        return categoryMapper.toDto(category);
     }
 
-    public CategoryResponse getCategoriesForUser(User user, int page, int size, boolean asc) {
+    public PagedResponse<List<CategoryDto>> getCategoriesForUser(User user, int page, int size, boolean asc) {
         Sort sort = asc
                 ? Sort.by("id").ascending()
                 : Sort.by("id").descending();
@@ -73,10 +73,10 @@ public class CategoryService {
         Page<Category> byUserId = categoryRepository.findByUser_Id(user.getId(), pageable);
 
         List<CategoryDto> list = byUserId.getContent().stream()
-                .map(mapper::toDto)
+                .map(categoryMapper::toDto)
                 .toList();
 
-        return new CategoryResponse(list, byUserId.getNumber(), byUserId.getTotalElements(), byUserId.getTotalPages());
+        return new PagedResponse<>(list, byUserId.getNumber(), byUserId.getTotalElements(), byUserId.getTotalPages());
     }
 
     @Transactional

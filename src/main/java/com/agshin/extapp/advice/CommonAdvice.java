@@ -5,6 +5,7 @@ import com.agshin.extapp.exceptions.DataExistsException;
 import com.agshin.extapp.exceptions.UnauthorizedException;
 import com.agshin.extapp.model.constants.ApplicationConstants;
 import com.agshin.extapp.model.response.GenericResponse;
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -36,16 +38,23 @@ public class CommonAdvice {
         return isDev() ? ex.getMessage() : "Server error";
     }
 
+    private GenericResponse<String> buildResponse(Exception ex, HttpStatus status) {
+        String msg = ApplicationConstants.ERROR;
+        return GenericResponse.create(msg, getMessage(ex), status.value());
+    }
+
     @ExceptionHandler(UnauthorizedException.class)
     public ResponseEntity<GenericResponse<String>> handleUnauthorizedException(UnauthorizedException ex) {
-        var response = GenericResponse.create(ApplicationConstants.ERROR, getMessage(ex), HttpStatus.UNAUTHORIZED.value());
+        var response = buildResponse(ex, HttpStatus.UNAUTHORIZED);
+
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(response);
     }
 
     @ExceptionHandler(DataExistsException.class)
     public ResponseEntity<GenericResponse<String>> handleDataExistsException(DataExistsException ex) {
-        var response = GenericResponse.create(ApplicationConstants.ERROR, getMessage(ex), HttpStatus.UNPROCESSABLE_ENTITY.value());
+        var response = buildResponse(ex, HttpStatus.UNPROCESSABLE_ENTITY);
+
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(response);
     }
@@ -53,25 +62,36 @@ public class CommonAdvice {
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<GenericResponse<String>> handleDataIntegrityViolationException(DataIntegrityViolationException ex) {
-        var response = GenericResponse.create(
-                ApplicationConstants.ERROR,
-                getMessage(ex),
-                HttpStatus.CONFLICT.value()
-        );
+        var response = buildResponse(ex, HttpStatus.CONFLICT);
 
-        return ResponseEntity.status(HttpStatus.CONFLICT.value()).body(response);
+        return ResponseEntity.status(HttpStatus.CONFLICT.value())
+                .body(response);
     }
 
     @ExceptionHandler(AuthorizationDeniedException.class)
     public ResponseEntity<GenericResponse<String>> handleAuthorizationDeniedException(AuthorizationDeniedException ex) {
-        var response = GenericResponse.create(
-                ApplicationConstants.ERROR,
-                getMessage(ex),
-                HttpStatus.UNAUTHORIZED.value()
-        );
+        var response = buildResponse(ex, HttpStatus.UNAUTHORIZED);
 
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED.value()).body(response);
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED.value())
+                .body(response);
     }
+
+    @ExceptionHandler
+    public ResponseEntity<GenericResponse<String>> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
+        var response = buildResponse(ex, HttpStatus.BAD_REQUEST);
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST.value())
+                .body(response);
+    }
+
+    @ExceptionHandler(InvalidFormatException.class)
+    public ResponseEntity<GenericResponse<String>> handleInvalidFormatException(InvalidFormatException ex) {
+        var response = buildResponse(ex, HttpStatus.UNAUTHORIZED);
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED.value())
+                .body(response);
+    }
+
 
     @ExceptionHandler({RuntimeException.class, Exception.class})
     public ResponseEntity<GenericResponse<String>> handleException(RuntimeException ex) {

@@ -5,10 +5,11 @@ import com.agshin.extapp.model.entities.Category;
 import com.agshin.extapp.model.entities.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingConstants;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 
 @Mapper(
-        componentModel = "Spring",
+        componentModel = MappingConstants.ComponentModel.SPRING,
         uses = {UserMapper.class}, // allows MapStruct to automatically map nested dtos/entities
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE
 )

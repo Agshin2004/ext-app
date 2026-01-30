@@ -18,11 +18,11 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
     @Query("""
                     SELECT category 
                     FROM Category category
-                    WHERE category.categoryName = :name
+                    WHERE category.id = :id
                     AND category.user.id = :userId
             """)
-    Optional<Category> findByCategoryNameAndUser_Id(
-            @Param("name") String categoryName,
+    Optional<Category> findByIdAndUser_Id(
+            @Param("id") Long id,
             @Param("userId") Long userId
     );
 
