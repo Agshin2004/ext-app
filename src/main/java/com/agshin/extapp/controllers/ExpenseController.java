@@ -1,9 +1,10 @@
 package com.agshin.extapp.controllers;
 
-import com.agshin.extapp.ExpenseDto;
+import com.agshin.extapp.model.dto.expense.ExpenseDto;
 import com.agshin.extapp.model.constants.ApplicationConstants;
 import com.agshin.extapp.model.request.expense.CreateExpenseRequest;
 import com.agshin.extapp.model.dto.expense.PagedResponse;
+import com.agshin.extapp.model.request.expense.UpdateExpenseRequest;
 import com.agshin.extapp.model.response.expense.ExpenseResponse;
 import com.agshin.extapp.model.response.GenericResponse;
 import com.agshin.extapp.services.ExpenseService;
@@ -44,6 +45,19 @@ public class ExpenseController {
         var response = GenericResponse.create(ApplicationConstants.SUCCESS, expense, HttpStatus.CREATED.value());
 
         return ResponseEntity.status(HttpStatus.CREATED.value())
+                .body(response);
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<GenericResponse<ExpenseResponse>> updateExpense(
+            @PathVariable("id") Long id,
+            @RequestBody UpdateExpenseRequest request
+    ) {
+        var expense = expenseService.updateExpense(id, request);
+
+        var response = GenericResponse.create(ApplicationConstants.SUCCESS, expense, HttpStatus.OK.value());
+
+        return ResponseEntity.status(HttpStatus.OK.value())
                 .body(response);
     }
 }

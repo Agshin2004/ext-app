@@ -55,7 +55,7 @@ public class CommonAdvice {
     public ResponseEntity<GenericResponse<String>> handleDataExistsException(DataExistsException ex) {
         var response = buildResponse(ex, HttpStatus.UNPROCESSABLE_ENTITY);
 
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
                 .body(response);
     }
 
@@ -92,16 +92,21 @@ public class CommonAdvice {
                 .body(response);
     }
 
+    // 500
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<GenericResponse<String>> handleIllegalStateException(IllegalStateException ex) {
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(buildResponse(ex, HttpStatus.INTERNAL_SERVER_ERROR));
+    }
 
-    @ExceptionHandler({RuntimeException.class, Exception.class})
-    public ResponseEntity<GenericResponse<String>> handleException(RuntimeException ex) {
-        var response = GenericResponse.create(ApplicationConstants.ERROR, "server error", HttpStatus.INTERNAL_SERVER_ERROR.value());
-
-        log.info(ex.getMessage());
-        log.error("e: ", ex);
+    // 500 - Catch-all handler
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<GenericResponse<String>> handleException(Exception ex) {
+        log.error("Exception occurred: {}", ex.getMessage(), ex);
 
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(response);
+                .body(buildResponse(ex, HttpStatus.INTERNAL_SERVER_ERROR));
     }
 }

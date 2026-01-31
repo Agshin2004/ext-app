@@ -1,11 +1,13 @@
 package com.agshin.extapp.services;
 
-import com.agshin.extapp.ExpenseDto;
+import com.agshin.extapp.model.dto.expense.ExpenseDto;
+import com.agshin.extapp.exceptions.DataNotFoundException;
 import com.agshin.extapp.mappers.ExpenseMapper;
 import com.agshin.extapp.model.dto.expense.PagedResponse;
 import com.agshin.extapp.model.entities.Category;
 import com.agshin.extapp.model.entities.Expense;
 import com.agshin.extapp.model.request.expense.CreateExpenseRequest;
+import com.agshin.extapp.model.request.expense.UpdateExpenseRequest;
 import com.agshin.extapp.model.response.expense.ExpenseResponse;
 import com.agshin.extapp.repositories.ExpenseRepository;
 import com.agshin.extapp.resolvers.ExpenseReferenceResolver;
@@ -87,5 +89,23 @@ public class ExpenseService {
                 .toList();
 
         return new PagedResponse<List<ExpenseDto>>(list, byUserId.getNumber(), byUserId.getTotalElements(), byUserId.getTotalPages());
+    }
+
+    public ExpenseResponse updateExpense(Long id, UpdateExpenseRequest request) {
+        var currentUserId = authService.getCurrentUserId();
+        var expense = expenseRepository.findByIdAndUser_Id(id, currentUserId)
+                .orElseThrow(() -> new DataNotFoundException("Category not found"));
+
+        expenseMapper.updateExpenseFromRequest(request, expense);
+
+        // category can be changed
+        if (Objects.nonNull(request.categoryId())) {
+            var category = expenseReferenceResolver.resolveCategory(request.categoryId(), currentUserId);
+            expense.setCategory(category);
+        }
+
+        expenseRepository.save(expense);
+
+        return expenseMapper.toResponse(expense);
     }
 }

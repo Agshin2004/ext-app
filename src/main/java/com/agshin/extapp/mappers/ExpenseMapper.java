@@ -1,8 +1,9 @@
 package com.agshin.extapp.mappers;
 
-import com.agshin.extapp.ExpenseDto;
+import com.agshin.extapp.model.dto.expense.ExpenseDto;
 import com.agshin.extapp.model.entities.Expense;
 import com.agshin.extapp.model.request.expense.CreateExpenseRequest;
+import com.agshin.extapp.model.request.expense.UpdateExpenseRequest;
 import com.agshin.extapp.model.response.expense.ExpenseResponse;
 import org.mapstruct.*;
 
@@ -20,7 +21,7 @@ public interface ExpenseMapper {
 
     @Mapping(
             target = "categoryId",
-            expression = "java(expense.getCategory() != null ? expense.getRecurringExpense().getId() : null)"
+            expression = "java(expense.getCategory() != null ? expense.getCategory().getId() : null)"
     )
     @Mapping(target = "userId", expression = "java(expense.getUser().getId())")
     ExpenseResponse toResponse(Expense expense);
@@ -38,4 +39,6 @@ public interface ExpenseMapper {
             expression = "java(expense.getRecurringExpense() != null ? expense.getRecurringExpense().getId() : null)"
     )
     ExpenseDto toDto(Expense expense);
+
+    void updateExpenseFromRequest(UpdateExpenseRequest request, @MappingTarget Expense expense);
 }
