@@ -24,6 +24,20 @@ public class ExpenseController {
         this.expenseService = expenseService;
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<GenericResponse<ExpenseResponse>> getOne(@PathVariable("id") Long id) {
+        ExpenseResponse expenseById = expenseService.getById(id);
+
+        var response = GenericResponse.create(
+                ApplicationConstants.SUCCESS,
+                expenseById,
+                HttpStatus.OK.value()
+        );
+
+        return ResponseEntity.status(HttpStatus.OK.value())
+                .body(response);
+    }
+
     @GetMapping
     public ResponseEntity<GenericResponse<PagedResponse<List<ExpenseDto>>>> getAll(
             @RequestParam(defaultValue = "0") int page,
@@ -58,6 +72,20 @@ public class ExpenseController {
         var response = GenericResponse.create(ApplicationConstants.SUCCESS, expense, HttpStatus.OK.value());
 
         return ResponseEntity.status(HttpStatus.OK.value())
+                .body(response);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<GenericResponse<Void>> deleteExpense(@PathVariable("id") Long id) {
+        expenseService.deleteExpense(id);
+
+        GenericResponse<Void> response = GenericResponse.create(
+                ApplicationConstants.SUCCESS,
+                null,
+                HttpStatus.NO_CONTENT.value()
+        );
+
+        return ResponseEntity.status(HttpStatus.NO_CONTENT.value())
                 .body(response);
     }
 }

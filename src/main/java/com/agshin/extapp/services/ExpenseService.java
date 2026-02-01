@@ -11,6 +11,7 @@ import com.agshin.extapp.model.request.expense.UpdateExpenseRequest;
 import com.agshin.extapp.model.response.expense.ExpenseResponse;
 import com.agshin.extapp.repositories.ExpenseRepository;
 import com.agshin.extapp.resolvers.ExpenseReferenceResolver;
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -38,14 +39,15 @@ public class ExpenseService {
         this.expenseReferenceResolver = expenseReferenceResolver;
     }
 
-    /**
-     * Todo: IMPLEMENT
-     * @return
-     */
-    public Expense getById() {
-        return null;
+
+    public ExpenseResponse getById(Long id) {
+        Expense expense = expenseRepository.findById(id)
+                .orElseThrow(() -> new DataNotFoundException("Expense not found"));
+
+        return expenseMapper.toResponse(expense);
     }
 
+    @Transactional
     public ExpenseResponse createExpense(CreateExpenseRequest request) {
         // calling first category so resolver can check if category is owned by user
         Category category = expenseReferenceResolver.resolveCategory(
@@ -91,6 +93,7 @@ public class ExpenseService {
         return new PagedResponse<List<ExpenseDto>>(list, byUserId.getNumber(), byUserId.getTotalElements(), byUserId.getTotalPages());
     }
 
+    @Transactional
     public ExpenseResponse updateExpense(Long id, UpdateExpenseRequest request) {
         var currentUserId = authService.getCurrentUserId();
         var expense = expenseRepository.findByIdAndUser_Id(id, currentUserId)
@@ -107,5 +110,14 @@ public class ExpenseService {
         expenseRepository.save(expense);
 
         return expenseMapper.toResponse(expense);
+    }
+
+    @Transactional
+    public void deleteExpense(Long id) {
+        var currentUserId = authService.getCurrentUserId();
+        var expense = expenseRepository.findByIdAndUser_Id(id, currentUserId)
+                .orElseThrow(() -> new DataNotFoundException("Category not found"));
+
+        expenseRepository.delete(expense);
     }
 }

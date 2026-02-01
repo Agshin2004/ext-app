@@ -2,6 +2,7 @@ package com.agshin.extapp.advice;
 
 import com.agshin.extapp.exceptions.AuthorizationDeniedException;
 import com.agshin.extapp.exceptions.DataExistsException;
+import com.agshin.extapp.exceptions.DataNotFoundException;
 import com.agshin.extapp.exceptions.UnauthorizedException;
 import com.agshin.extapp.model.constants.ApplicationConstants;
 import com.agshin.extapp.model.response.GenericResponse;
@@ -59,6 +60,14 @@ public class CommonAdvice {
                 .body(response);
     }
 
+    @ExceptionHandler(DataNotFoundException.class)
+    public ResponseEntity<GenericResponse<String>> handleDataNotFoundException(DataNotFoundException ex) {
+        var response = buildResponse(ex, HttpStatus.NOT_FOUND);
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(response);
+    }
+
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<GenericResponse<String>> handleDataIntegrityViolationException(DataIntegrityViolationException ex) {
@@ -92,7 +101,6 @@ public class CommonAdvice {
                 .body(response);
     }
 
-    // 500
     @ExceptionHandler(IllegalStateException.class)
     public ResponseEntity<GenericResponse<String>> handleIllegalStateException(IllegalStateException ex) {
         return ResponseEntity
@@ -100,7 +108,6 @@ public class CommonAdvice {
                 .body(buildResponse(ex, HttpStatus.INTERNAL_SERVER_ERROR));
     }
 
-    // 500 - Catch-all handler
     @ExceptionHandler(Exception.class)
     public ResponseEntity<GenericResponse<String>> handleException(Exception ex) {
         log.error("Exception occurred: {}", ex.getMessage(), ex);
