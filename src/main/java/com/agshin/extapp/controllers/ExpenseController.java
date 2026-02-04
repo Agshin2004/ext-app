@@ -4,6 +4,8 @@ import com.agshin.extapp.model.dto.expense.ExpenseDto;
 import com.agshin.extapp.model.constants.ApplicationConstants;
 import com.agshin.extapp.model.request.expense.CreateExpenseRequest;
 import com.agshin.extapp.model.dto.expense.PagedResponse;
+import com.agshin.extapp.model.request.expense.CreateRecurringExpenseRequest;
+import com.agshin.extapp.model.request.expense.RecurringExpenseResponse;
 import com.agshin.extapp.model.request.expense.UpdateExpenseRequest;
 import com.agshin.extapp.model.response.expense.ExpenseResponse;
 import com.agshin.extapp.model.response.GenericResponse;
@@ -22,6 +24,20 @@ public class ExpenseController {
 
     public ExpenseController(ExpenseService expenseService) {
         this.expenseService = expenseService;
+    }
+
+    @PostMapping("/recurring")
+    public ResponseEntity<GenericResponse<RecurringExpenseResponse>> addRecurringExpense(@RequestBody CreateRecurringExpenseRequest request) {
+        var recurringExpense = expenseService.createRecurringExpense(request);
+
+        var response = GenericResponse.create(
+                ApplicationConstants.SUCCESS,
+                recurringExpense,
+                HttpStatus.CREATED.value()
+        );
+
+        return ResponseEntity.status(HttpStatus.CREATED.value())
+                .body(response);
     }
 
     @GetMapping("/{id}")

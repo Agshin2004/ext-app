@@ -13,6 +13,7 @@ import com.agshin.extapp.repositories.PasswordResetTokenRepository;
 import com.agshin.extapp.repositories.UserRepository;
 //import org.springframework.security.crypto.password.PasswordEncoder;
 import com.agshin.extapp.utils.JwtUtils;
+import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.Email;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -46,6 +47,7 @@ public class UserService {
         this.tokenRepository = tokenRepository;
     }
 
+    @Transactional
     public UserResponse createUser(String email, String username, String password) {
         userRepository.findByEmail(email)
                 .ifPresent(user -> {
@@ -99,6 +101,7 @@ public class UserService {
                 });
     }
 
+    @Transactional
     public void resetPassword(String rawToken, String newPassword) {
         PasswordResetToken token = tokenRepository
                 .findValidTokens(Instant.now())
