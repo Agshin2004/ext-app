@@ -37,6 +37,7 @@ public class RecurringExpense {
     private String description;
 
     @Column(name = "frequency")
+    @Enumerated(EnumType.STRING)
     private RecurringExpenseFrequency frequency;
 
     @Column(name = "start_date")
@@ -45,6 +46,8 @@ public class RecurringExpense {
     @Column(name = "end_date")
     private LocalDateTime endDate;
 
+    @Column(name = "active")
+    private boolean active;
 
 
     public Long getId() {
@@ -109,5 +112,13 @@ public class RecurringExpense {
 
     public void setEndDate(LocalDateTime endDate) {
         this.endDate = endDate;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
 }

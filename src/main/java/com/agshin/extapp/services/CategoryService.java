@@ -27,7 +27,7 @@ public class CategoryService {
     private final CategoryMapper categoryMapper;
     private final CategoryRepository categoryRepository;
 
-    public CategoryService(CategoryMapper mapper, CategoryRepository categoryRepository, CategoryMapper categoryMapper) {
+    public CategoryService(CategoryMapper mapper, CategoryRepository categoryRepository) {
         this.categoryMapper = mapper;
         this.categoryRepository = categoryRepository;
     }
