@@ -17,7 +17,7 @@ public class Expense {
     @SequenceGenerator(
             name = "expenses_id_seq",
             sequenceName = "expenses_id_seq",
-            allocationSize = 1
+            allocationSize = 100
     )
     private Long id;
 

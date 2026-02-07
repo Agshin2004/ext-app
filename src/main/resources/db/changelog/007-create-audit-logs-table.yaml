@@ -1,10 +1,10 @@
 databaseChangeLog:
   - changeSet:
-      id: 005-create-expenses-table.yaml
-      author: admin
+      id: 007-create-audit-logs-table.yaml
+      author: Agshin2004
       changes:
         - createTable:
-            tableName: expenses
+            tableName: audit_logs
             columns:
               - column:
                   name: id
@@ -14,41 +14,46 @@ databaseChangeLog:
                     primaryKey: true
 
               - column:
-                  name: user_id
-                  type: bigint
+                  name: action
+                  type: varchar(50)
                   constraints:
                     nullable: false
 
               - column:
-                  name: category_id
-                  type: bigint
-                  constraints:
-                    nullable: false
-
-              - column:
-                  name: recurring_expense_id
-                  type: bigint
+                  name: entity
+                  type: varchar(50)
                   constraints:
                     nullable: true
 
               - column:
-                  name: amount
-                  type: decimal(19,4)
+                  name: entity_id
+                  type: varchar(20)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: performed_by
+                  type: varchar(50) # username or id
                   constraints:
                     nullable: false
 
               - column:
-                  name: currency
-                  type: varchar(5)
+                  name: ip_address
+                  type: varchar(45) # made 45 for ipv6
                   constraints:
-                    nullable: false
+                    nullable: true
 
               - column:
-                  name: expense_date
+                  name: before_state
+                  type: TEXT  # json dump
+
+              - column:
+                  name: after_state
+                  type: TEXT
+
+              - column:
+                  name: created_at
                   type: datetime
                   constraints:
                     nullable: false
 
-              - column:
-                  name: description
-                  type: text
+

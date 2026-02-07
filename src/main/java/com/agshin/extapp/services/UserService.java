@@ -1,5 +1,6 @@
 package com.agshin.extapp.services;
 
+import com.agshin.extapp.aspect.annotations.Auditable;
 import com.agshin.extapp.exceptions.DataExistsException;
 import com.agshin.extapp.exceptions.DataNotFoundException;
 import com.agshin.extapp.exceptions.InvalidTokenException;
@@ -7,6 +8,7 @@ import com.agshin.extapp.exceptions.UnauthorizedException;
 import com.agshin.extapp.mappers.UserMapper;
 import com.agshin.extapp.model.entities.PasswordResetToken;
 import com.agshin.extapp.model.entities.User;
+import com.agshin.extapp.model.enums.AuditType;
 import com.agshin.extapp.model.request.user.CreateUserRequest;
 import com.agshin.extapp.model.response.user.UserResponse;
 import com.agshin.extapp.repositories.PasswordResetTokenRepository;
@@ -48,6 +50,7 @@ public class UserService {
     }
 
     @Transactional
+    @Auditable(action = AuditType.USER_CREATE, entity = "User")
     public UserResponse createUser(String email, String username, String password) {
         userRepository.findByEmail(email)
                 .ifPresent(user -> {
