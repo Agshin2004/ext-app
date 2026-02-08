@@ -13,3 +13,5 @@ databaseChangeLog:
       file: db/changelog/006-add-active-column-to-recurring-expenses.yaml
   - include:
       file: db/changelog/007-create-audit-logs-table.yaml
+  - include:
+      file: db/changelog/008-create-file-metadata-table.yaml

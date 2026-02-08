@@ -1,0 +1,50 @@
+databaseChangeLog:
+  - changeSet:
+      id: 008-create-file-metadata-table.yaml
+      author: Agshin2004
+      changes:
+        - createSequence:
+            sequenceName: file_metadata_seq
+            startValue: 1
+            incrementBy: 1
+
+        - createTable:
+            tableName: file_metadata
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: filename
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: file_type
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: storage_path
+                  type: VARCHAR(500)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: size
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: uploaded_at
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+
+        - addDefaultValue:
+            tableName: file_metadata
+            columnName: id
+            defaultValueSequenceNext: file_metadata_seq

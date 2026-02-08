@@ -7,17 +7,21 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.Objects;
 
 @Aspect
 @Component
 public class AuditAspect {
-    @Autowired
-    private AuditLogger auditLogger;
+    private final AuditLogger auditLogger;
+    private final HttpServletRequest request;
 
-    @Autowired
-    private HttpServletRequest request;
+    public AuditAspect(AuditLogger auditLogger, HttpServletRequest request) {
+        this.auditLogger = auditLogger;
+        this.request = request;
+    }
+
 
     @Around("@annotation(auditable)")
     public Object audit(ProceedingJoinPoint joinPoint, Auditable auditable) throws Throwable {
@@ -47,9 +51,9 @@ public class AuditAspect {
 
     private String extractId(Object obj) {
         try {
-            return BeanUtils.getPropertyDescriptor(obj.getClass(), "id")
-                    .getReadMethod()
-                    .invoke(obj)
+            return Objects.requireNonNull(BeanUtils.getPropertyDescriptor(obj.getClass(), "id"))
+                    .getReadMethod() // getter
+                    .invoke(obj)// call method
                     .toString();
         } catch (Exception e) {
             return null;

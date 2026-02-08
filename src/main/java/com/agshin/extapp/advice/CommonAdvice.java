@@ -1,9 +1,6 @@
 package com.agshin.extapp.advice;
 
-import com.agshin.extapp.exceptions.AuthorizationDeniedException;
-import com.agshin.extapp.exceptions.DataExistsException;
-import com.agshin.extapp.exceptions.DataNotFoundException;
-import com.agshin.extapp.exceptions.UnauthorizedException;
+import com.agshin.extapp.exceptions.*;
 import com.agshin.extapp.model.constants.ApplicationConstants;
 import com.agshin.extapp.model.response.GenericResponse;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
@@ -49,6 +46,14 @@ public class CommonAdvice {
         var response = buildResponse(ex, HttpStatus.UNAUTHORIZED);
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(response);
+    }
+
+    @ExceptionHandler(ValidationException.class)
+    public ResponseEntity<GenericResponse<String>> handleValidationException(ValidationException ex) {
+        var response = buildResponse(ex, HttpStatus.BAD_REQUEST);
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(response);
     }
 
