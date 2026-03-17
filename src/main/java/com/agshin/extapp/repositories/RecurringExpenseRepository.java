@@ -18,11 +18,10 @@ public interface RecurringExpenseRepository extends JpaRepository<RecurringExpen
     @Query("""
                     SELECT r from RecurringExpense r
                     WHERE r.active = true
-                    AND r.frequency = :frequency
-                    AND r.startDate <= :today
+                    AND r.nextRunDate <= :today
                     AND (r.endDate IS NULL OR r.endDate >= :today)
             """)
-    Optional<List<RecurringExpense>> findActiveByFrequencyAndDate(
+    List<RecurringExpense> findActiveByFrequencyAndDate(
             RecurringExpenseFrequency frequency,
             LocalDateTime today
     );

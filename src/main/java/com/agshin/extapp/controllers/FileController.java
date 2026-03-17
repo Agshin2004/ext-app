@@ -12,8 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -63,4 +63,5 @@ public class FileController {
                 .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=".concat(meta.getFilename()))
                 .body(resource);
     }
+
 }

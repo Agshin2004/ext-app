@@ -46,6 +46,9 @@ public class RecurringExpense {
     @Column(name = "end_date")
     private LocalDateTime endDate;
 
+    @Column(name = "next_run_date")
+    private LocalDateTime nextRunDate;
+
     @Column(name = "active")
     private boolean active;
 
@@ -120,5 +123,13 @@ public class RecurringExpense {
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    public LocalDateTime getNextRunDate() {
+        return nextRunDate;
+    }
+
+    public void setNextRunDate(LocalDateTime nextRunDate) {
+        this.nextRunDate = nextRunDate;
     }
 }

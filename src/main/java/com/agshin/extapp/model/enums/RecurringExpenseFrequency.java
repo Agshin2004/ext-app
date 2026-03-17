@@ -1,5 +1,10 @@
 package com.agshin.extapp.model.enums;
 
 public enum RecurringExpenseFrequency {
-    DAILY, WEEKLY, MONTHLY, YEARLY;
+    DAILY("1"), WEEKLY("7"), MONTHLY("30"), YEARLY("365");
+
+    private final String day;
+    RecurringExpenseFrequency(String number) {
+        this.day = number;
+    }
 }

@@ -16,52 +16,51 @@ public class RecurringExpenseJob {
     public RecurringExpenseJob(RecurringExpenseRepository recurringExpenseRepo) {
         this.recurringExpenseRepo = recurringExpenseRepo;
     }
+//    @Transactional
+//    public List<RecurringExpense> getDueToday() {
+//        LocalDateTime now = LocalDateTime.now();
+//
+//        List<RecurringExpense> all = recurringExpenseRepo.findActiveByFrequencyAndDate(
+//                RecurringExpenseFrequency.DAILY, now
+//        );
+//
+//        all.addAll(getWeekly(LocalDateTime.now()));
+//        all.addAll(getMonthly(LocalDateTime.now()));
+//        all.addAll(getYearly(LocalDateTime.now()));
+//
+//        return all;
+//    }
+//
+//    private List<RecurringExpense> getWeekly(LocalDateTime today) {
+//        List<RecurringExpense> weekly = recurringExpenseRepo
+//                .findActiveByFrequencyAndDate(RecurringExpenseFrequency.WEEKLY, today);
+//
+//        return weekly.stream()
+//                .filter(r -> r.getStartDate().getDayOfWeek() == today.getDayOfWeek())
+//                .toList();
+//    }
+//
+//    private List<RecurringExpense> getMonthly(LocalDateTime today) {
+//        List<RecurringExpense> monthly = recurringExpenseRepo
+//                .findActiveByFrequencyAndDate(RecurringExpenseFrequency.MONTHLY, today);
+//
+//        return monthly.stream()
+//                .filter(r -> r.getStartDate().getDayOfMonth() == today.getDayOfMonth())
+//                .toList();
+//    }
+//
+//    private List<RecurringExpense> getYearly(LocalDateTime today) {
+//        List<RecurringExpense> yearly = recurringExpenseRepo
+//                .findActiveByFrequencyAndDate(RecurringExpenseFrequency.YEARLY, today);
+//
+//        return yearly.stream()
+//                .filter(r ->
+//                        r.getStartDate().getDayOfMonth() == today.getDayOfMonth() && r.getStartDate().getMonth() == today.getMonth()
+//                ).toList();
+//    }
 
-    @Transactional
-    public List<RecurringExpense> getDueToday() {
-        LocalDateTime now = LocalDateTime.now();
-
-        List<RecurringExpense> all = recurringExpenseRepo.findActiveByFrequencyAndDate(
-                RecurringExpenseFrequency.DAILY, now
-        ).orElseThrow(() -> new IllegalStateException("server error")); // todo
-
-        all.addAll(getWeekly(LocalDateTime.now()));
-        all.addAll(getMonthly(LocalDateTime.now()));
-        all.addAll(getYearly(LocalDateTime.now()));
-
-        return all;
-    }
-
-    private List<RecurringExpense> getWeekly(LocalDateTime today) {
-        List<RecurringExpense> weekly = recurringExpenseRepo
-                .findActiveByFrequencyAndDate(RecurringExpenseFrequency.WEEKLY, today)
-                .orElseThrow(() -> new IllegalStateException("server error")); // todo
-
-        return weekly.stream()
-                .filter(r -> r.getStartDate().getDayOfWeek() == today.getDayOfWeek())
-                .toList();
-    }
-
-    private List<RecurringExpense> getMonthly(LocalDateTime today) {
-        List<RecurringExpense> monthly = recurringExpenseRepo
-                .findActiveByFrequencyAndDate(RecurringExpenseFrequency.MONTHLY, today)
-                .orElseThrow(() -> new IllegalStateException("server error")); // todo
-
-        return monthly.stream()
-                .filter(r -> r.getStartDate().getDayOfMonth() == today.getDayOfMonth())
-                .toList();
-    }
-
-    private List<RecurringExpense> getYearly(LocalDateTime today) {
-        List<RecurringExpense> yearly = recurringExpenseRepo
-                .findActiveByFrequencyAndDate(RecurringExpenseFrequency.YEARLY, today)
-                .orElseThrow(() -> new IllegalStateException("server error")); // todo
-
-        return yearly.stream()
-                .filter(r ->
-                        r.getStartDate().getDayOfMonth() == today.getDayOfMonth() && r.getStartDate().getMonth() == today.getMonth()
-                )
-                .toList();
+    public List<RecurringExpense> getDueNow() {
+        return recurringExpenseRepo.findActiveByFrequencyAndDate(RecurringExpenseFrequency.DAILY, LocalDateTime.now());
     }
 
 }

@@ -1,0 +1,15 @@
+databaseChangeLog:
+  - changeSet:
+      id: 009-add-next-run-date-column-to-recurring-expenses.yaml
+      author: agshin2004
+      changes:
+        - addColumn:
+            tableName: recurring_expenses
+            columns:
+              - column:
+                  name: next_run_date
+                  type: datetime
+                  constraints:
+                    nullable: false
+                  defaultValueDate: "NOW()"
+

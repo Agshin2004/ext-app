@@ -5,6 +5,7 @@ import com.agshin.extapp.exceptions.DataNotFoundException;
 import com.agshin.extapp.exceptions.ValidationException;
 import com.agshin.extapp.model.entities.FileMetaData;
 import com.agshin.extapp.repositories.FileMetadaRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -32,6 +33,7 @@ public class LocalFileStorageService {
         }
     }
 
+    @Transactional
     public FileMetaData storeFile(MultipartFile file) {
         String filename = StringUtils.cleanPath(file.getOriginalFilename())
                 .concat("-")
@@ -42,6 +44,7 @@ public class LocalFileStorageService {
         }
 
         String contentType = file.getContentType();
+        // allow only pdfs
         if (!contentType.startsWith("image/") && !contentType.equals("application/pdf")) {
             throw new ValidationException("invalid file type");
         }
