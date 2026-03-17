@@ -25,6 +25,7 @@ public class LocalFileStorageService {
     public LocalFileStorageService(FileStorageProperties properties, FileMetadaRepository repo) {
         this.fileStorageLocation = Paths.get(properties.getUploadDir());
         this.fileMetadaRepository = repo;
+        System.out.println(fileStorageLocation);
 
         try {
             Files.createDirectories(this.fileStorageLocation);
@@ -35,9 +36,12 @@ public class LocalFileStorageService {
 
     @Transactional
     public FileMetaData storeFile(MultipartFile file) {
-        String filename = StringUtils.cleanPath(file.getOriginalFilename())
-                .concat("-")
-                .concat(UUID.randomUUID().toString());
+        String filename = StringUtils.cleanPath(
+                UUID.randomUUID()
+                        .toString()
+                        .concat("-")
+                        .concat(file.getOriginalFilename())
+        );
 
         if (filename.contains("..")) {
             throw new IllegalArgumentException("invalid filename");
