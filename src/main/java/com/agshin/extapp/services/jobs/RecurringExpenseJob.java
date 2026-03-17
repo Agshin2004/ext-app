@@ -1,9 +1,11 @@
 package com.agshin.extapp.services.jobs;
 
+import com.agshin.extapp.model.entities.Expense;
 import com.agshin.extapp.model.entities.RecurringExpense;
+import com.agshin.extapp.model.enums.Currency;
 import com.agshin.extapp.model.enums.RecurringExpenseFrequency;
+import com.agshin.extapp.repositories.ExpenseRepository;
 import com.agshin.extapp.repositories.RecurringExpenseRepository;
-import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -12,55 +14,48 @@ import java.util.List;
 @Service
 public class RecurringExpenseJob {
     private final RecurringExpenseRepository recurringExpenseRepo;
+    private final ExpenseRepository expenseRepo;
 
-    public RecurringExpenseJob(RecurringExpenseRepository recurringExpenseRepo) {
+    public RecurringExpenseJob(RecurringExpenseRepository recurringExpenseRepo, ExpenseRepository expenseRepo) {
         this.recurringExpenseRepo = recurringExpenseRepo;
+        this.expenseRepo = expenseRepo;
     }
-//    @Transactional
-//    public List<RecurringExpense> getDueToday() {
-//        LocalDateTime now = LocalDateTime.now();
-//
-//        List<RecurringExpense> all = recurringExpenseRepo.findActiveByFrequencyAndDate(
-//                RecurringExpenseFrequency.DAILY, now
-//        );
-//
-//        all.addAll(getWeekly(LocalDateTime.now()));
-//        all.addAll(getMonthly(LocalDateTime.now()));
-//        all.addAll(getYearly(LocalDateTime.now()));
-//
-//        return all;
-//    }
-//
-//    private List<RecurringExpense> getWeekly(LocalDateTime today) {
-//        List<RecurringExpense> weekly = recurringExpenseRepo
-//                .findActiveByFrequencyAndDate(RecurringExpenseFrequency.WEEKLY, today);
-//
-//        return weekly.stream()
-//                .filter(r -> r.getStartDate().getDayOfWeek() == today.getDayOfWeek())
-//                .toList();
-//    }
-//
-//    private List<RecurringExpense> getMonthly(LocalDateTime today) {
-//        List<RecurringExpense> monthly = recurringExpenseRepo
-//                .findActiveByFrequencyAndDate(RecurringExpenseFrequency.MONTHLY, today);
-//
-//        return monthly.stream()
-//                .filter(r -> r.getStartDate().getDayOfMonth() == today.getDayOfMonth())
-//                .toList();
-//    }
-//
-//    private List<RecurringExpense> getYearly(LocalDateTime today) {
-//        List<RecurringExpense> yearly = recurringExpenseRepo
-//                .findActiveByFrequencyAndDate(RecurringExpenseFrequency.YEARLY, today);
-//
-//        return yearly.stream()
-//                .filter(r ->
-//                        r.getStartDate().getDayOfMonth() == today.getDayOfMonth() && r.getStartDate().getMonth() == today.getMonth()
-//                ).toList();
-//    }
 
     public List<RecurringExpense> getDueNow() {
         return recurringExpenseRepo.findActiveByFrequencyAndDate(RecurringExpenseFrequency.DAILY, LocalDateTime.now());
     }
 
+    public void processAll() {
+        var due = getDueNow();
+        due.forEach(this::process);
+
+        System.out.println("processed");
+    }
+
+    private void process(RecurringExpense recurringExpense) {
+        Expense expense = new Expense();
+        expense.setUser(recurringExpense.getUser());
+        expense.setCategory(recurringExpense.getCategory());
+        expense.setAmount(recurringExpense.getAmount());
+        expense.setDescription(recurringExpense.getDescription());
+        expense.setRecurringExpense(recurringExpense);
+        expense.setCurrency(Currency.AZN); // static for now
+        expense.setExpenseDate(LocalDateTime.now());
+
+        recurringExpense.setNextRunDate(
+                advance(recurringExpense.getNextRunDate(), recurringExpense.getFrequency())
+        );
+
+        expenseRepo.save(expense);
+        recurringExpenseRepo.save(recurringExpense);
+    }
+
+    private LocalDateTime advance(LocalDateTime nextRunDate, RecurringExpenseFrequency frequency) {
+        return switch (frequency) {
+            case DAILY -> nextRunDate.plusDays(1);
+            case WEEKLY -> nextRunDate.plusWeeks(1);
+            case MONTHLY -> nextRunDate.plusMonths(1);
+            case YEARLY -> nextRunDate.plusYears(1);
+        };
+    }
 }

@@ -13,6 +13,7 @@ import org.mapstruct.*;
 public interface RecurringExpenseMapper {
     @Mapping(target = "category", ignore = true)
     @Mapping(target = "user", ignore = true)
+    @Mapping(target = "nextRunDate", expression = "java(LocalDateTime.now())")
     RecurringExpense toEntity(CreateRecurringExpenseRequest request);
 
     @Mapping(target = "categoryId", expression = "java(expense.getCategory() != null ? expense.getCategory().getId() : null)")
