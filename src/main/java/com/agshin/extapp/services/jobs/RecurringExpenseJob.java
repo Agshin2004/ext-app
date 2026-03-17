@@ -1,7 +1,9 @@
 package com.agshin.extapp.services.jobs;
 
+import com.agshin.extapp.aspect.annotations.Auditable;
 import com.agshin.extapp.model.entities.Expense;
 import com.agshin.extapp.model.entities.RecurringExpense;
+import com.agshin.extapp.model.enums.AuditType;
 import com.agshin.extapp.model.enums.Currency;
 import com.agshin.extapp.model.enums.RecurringExpenseFrequency;
 import com.agshin.extapp.repositories.ExpenseRepository;
@@ -32,6 +34,7 @@ public class RecurringExpenseJob {
         System.out.println("processed");
     }
 
+    @Auditable(action = AuditType.STATE_CHANGE, entity = "RecurringExpense")
     private void process(RecurringExpense recurringExpense) {
         Expense expense = new Expense();
         expense.setUser(recurringExpense.getUser());

@@ -105,6 +105,7 @@ public class UserService {
     }
 
     @Transactional
+    @Auditable(action = AuditType.STATE_CHANGE, entity = "User")
     public void resetPassword(String rawToken, String newPassword) {
         PasswordResetToken token = tokenRepository
                 .findValidTokens(Instant.now())

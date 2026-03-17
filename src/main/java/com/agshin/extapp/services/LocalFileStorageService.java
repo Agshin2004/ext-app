@@ -25,7 +25,6 @@ public class LocalFileStorageService {
     public LocalFileStorageService(FileStorageProperties properties, FileMetadaRepository repo) {
         this.fileStorageLocation = Paths.get(properties.getUploadDir());
         this.fileMetadaRepository = repo;
-        System.out.println(fileStorageLocation);
 
         try {
             Files.createDirectories(this.fileStorageLocation);
