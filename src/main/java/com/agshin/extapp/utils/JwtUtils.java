@@ -37,7 +37,7 @@ public class JwtUtils {
         claims.put(User.USERNAME, user.getUsername());
         claims.put(User.EMAIL, user.getEmail());
         claims.put(User.ROLE, user.getRole());
-        claims.put(User.REGISTRATION_STATUS, user.getRole());
+        claims.put(User.REGISTRATION_STATUS, user.getRegistrationStatus());
 
         return createToken(user.getEmail(), claims);
     }
