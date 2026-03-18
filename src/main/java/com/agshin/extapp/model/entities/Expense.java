@@ -1,10 +1,12 @@
 package com.agshin.extapp.model.entities;
 
 import com.agshin.extapp.model.enums.Currency;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Entity
 @Table(name = "expenses")
@@ -44,6 +46,11 @@ public class Expense {
 
     @Column(name = "description")
     private String description;
+
+    @Transient
+    public Boolean isRecurring() {
+        return recurringExpense != null;
+    }
 
     public Long getId() {
         return id;

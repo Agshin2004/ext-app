@@ -38,6 +38,7 @@ public interface ExpenseMapper {
             target = "recurringExpenseId",
             expression = "java(expense.getRecurringExpense() != null ? expense.getRecurringExpense().getId() : null)"
     )
+    @Mapping(target = "isRecurring", source = "recurring")
     ExpenseDto toDto(Expense expense);
 
     void updateExpenseFromRequest(UpdateExpenseRequest request, @MappingTarget Expense expense);
