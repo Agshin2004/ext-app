@@ -17,13 +17,15 @@ import java.time.YearMonth;
 @Service
 public class AnalyticsService {
     private final ExpenseMapper expenseMapper;
+    private final AuthService authService;
     Logger logger = LoggerFactory.getLogger(AnalyticsService.class);
 
     private final ExpenseRepository expenseRepository;
 
-    public AnalyticsService(ExpenseRepository expenseRepository, ExpenseMapper expenseMapper) {
+    public AnalyticsService(ExpenseRepository expenseRepository, ExpenseMapper expenseMapper, AuthService authService) {
         this.expenseRepository = expenseRepository;
         this.expenseMapper = expenseMapper;
+        this.authService = authService;
     }
 
 
@@ -31,12 +33,11 @@ public class AnalyticsService {
      * Get all monthly expenses.
      *
      * @param date
-     * @param user
      * @return
      */
-    public MonthlyInsideDto getMonthlyInside(YearMonth date, User user) {
+    public MonthlyInsideDto getMonthlyInside(YearMonth date) {
         BigDecimal monthlyTotal = expenseRepository.getMonthlyTotal(
-                user.getId(),
+                authService.getCurrentUserId(),
                 date.atDay(1).atStartOfDay(), // add day and then time 00:00
                 date.atEndOfMonth().atTime(LocalTime.MAX) // last day of month and max time 23:59:59
         );
