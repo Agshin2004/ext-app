@@ -104,4 +104,14 @@ public class ExpenseController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT.value())
                 .body(response);
     }
+
+    @GetMapping("/category")
+    public ResponseEntity<GenericResponse<?>> getExpensesByCategory(@RequestParam("category") String categoryName) {
+        var allExpensesByCategory = expenseService.getAllExpensesByCategory(categoryName);
+
+        var response = GenericResponse.create(ApplicationConstants.SUCCESS, allExpensesByCategory, HttpStatus.OK.value());
+
+        return ResponseEntity.status(HttpStatus.OK.value())
+                .body(response);
+    }
 }

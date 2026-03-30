@@ -152,4 +152,12 @@ public class ExpenseService {
 
         return recurringExpenseMapper.toResponse(recurrExpense);
     }
+
+    public List<ExpenseDto> getAllExpensesByCategory(String categoryName) {
+        Page<Expense> byCategory = expenseRepository.findByCategory(categoryName, authService.getCurrentUserId());
+
+        return byCategory.getContent().stream()
+                .map(expenseMapper::toDto)
+                .toList();
+    }
 }
