@@ -6,6 +6,7 @@ import com.agshin.extapp.exceptions.DataNotFoundException;
 import com.agshin.extapp.exceptions.InvalidTokenException;
 import com.agshin.extapp.exceptions.UnauthorizedException;
 import com.agshin.extapp.mappers.UserMapper;
+import com.agshin.extapp.model.dto.user.events.UserRegisteredEvent;
 import com.agshin.extapp.model.entities.PasswordResetToken;
 import com.agshin.extapp.model.entities.User;
 import com.agshin.extapp.model.enums.AuditType;
@@ -17,6 +18,8 @@ import com.agshin.extapp.repositories.UserRepository;
 import com.agshin.extapp.utils.JwtUtils;
 import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.Email;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -26,6 +29,7 @@ import java.util.UUID;
 
 @Service
 public class UserService {
+    private static final Logger log = LoggerFactory.getLogger(UserService.class);
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
@@ -121,5 +125,9 @@ public class UserService {
 
         userRepository.save(user);
         tokenRepository.save(token);
+    }
+
+    public void processUserRegistered(UserRegisteredEvent event) {
+        log.info("Event came through {}", event.email());
     }
 }
