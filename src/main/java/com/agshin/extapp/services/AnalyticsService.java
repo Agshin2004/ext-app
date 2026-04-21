@@ -11,6 +11,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.YearMonth;
 
@@ -33,17 +34,24 @@ public class AnalyticsService {
      * Get all monthly expenses.
      *
      * @param date
-     * @return
+     * @return {@link MonthlyInsideDto}
      */
     public MonthlyInsideDto getMonthlyInside(YearMonth date) {
-        BigDecimal monthlyTotal = expenseRepository.getMonthlyTotal(
-                authService.getCurrentUserId(),
-                date.atDay(1).atStartOfDay(), // add day and then time 00:00
-                date.atEndOfMonth().atTime(LocalTime.MAX) // last day of month and max time 23:59:59
+        Long currentUserId = authService.getCurrentUserId();
+        LocalDateTime start = date.atDay(1).atStartOfDay(); // add day and then time 00:00
+        LocalDateTime end = date.atEndOfMonth().atTime(LocalTime.MAX); // last day of month and max time 23:59:59
+
+        BigDecimal totalAmount = expenseRepository.getMonthlyTotal(currentUserId, start, end);
+        int totalExpenses = expenseRepository.getMonthlyNumberOfExpenses(currentUserId, start, end);
+        int averageExpenseAmount = expenseRepository.getAverageExpenseAmount(currentUserId, start, end);
+        int largestExpense = expenseRepository.getLargestExpense(currentUserId, start, end);
+
+        return new MonthlyInsideDto(
+                totalAmount != null ? totalAmount : BigDecimal.ZERO,
+                totalExpenses,
+                averageExpenseAmount,
+                largestExpense
         );
-
-
-
-        return new MonthlyInsideDto(monthlyTotal);
     }
+
 }

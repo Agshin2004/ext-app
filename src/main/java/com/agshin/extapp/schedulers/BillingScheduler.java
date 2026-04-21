@@ -26,7 +26,7 @@ public class BillingScheduler {
 
 
     // TODO: implement custom retries logic
-    @Scheduled(cron = "* * * * * *")
+    @Scheduled(cron = "0 0 /1 * * *")
     public void processDueExpenses() {
         schedulerService.processAll();
     }

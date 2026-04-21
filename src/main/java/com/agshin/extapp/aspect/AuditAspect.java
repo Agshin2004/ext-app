@@ -32,8 +32,9 @@ public class AuditAspect {
         Object before = args[0];
 
 
-        Object result = joinPoint.proceed();
+        Object result = joinPoint.proceed(); // call method
 
+        // log before and after state
         auditLogger.log(
                 auditable.action().name(),
                 auditable.entity(),
