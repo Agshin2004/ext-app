@@ -7,6 +7,7 @@ import com.agshin.extapp.model.request.category.CreateCategoryRequest;
 import com.agshin.extapp.model.request.category.UpdateCategoryRequest;
 import com.agshin.extapp.model.response.GenericResponse;
 import com.agshin.extapp.model.dto.expense.PagedResponse;
+import com.agshin.extapp.services.AuthService;
 import com.agshin.extapp.services.CategoryService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,22 +20,22 @@ import java.util.List;
 @RequestMapping("/categories")
 public class CategoryController {
     private final CategoryService categoryService;
+    private final AuthService authService;
 
-    public CategoryController(CategoryService categoryService) {
+    public CategoryController(CategoryService categoryService, AuthService authService) {
         this.categoryService = categoryService;
+        this.authService = authService;
     }
 
     @GetMapping
     public ResponseEntity<GenericResponse<PagedResponse<List<CategoryDto>>>> getUserCategories(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "true") boolean asc,
-            @AuthenticationPrincipal CustomUserDetails userDetails) {
+            @RequestParam(defaultValue = "true") boolean asc) {
 
 
-        // todo: use AuthService
         PagedResponse<List<CategoryDto>> categoriesForUser = categoryService.getCategoriesForUser(
-                userDetails.getUser(),
+                authService.getCurrentUser(),
                 page,
                 size,
                 asc
@@ -49,9 +50,8 @@ public class CategoryController {
 
     @PostMapping
     public ResponseEntity<GenericResponse<CategoryDto>> createCategory(
-            @RequestBody CreateCategoryRequest request,
-            @AuthenticationPrincipal CustomUserDetails userDetails) {
-        CategoryDto category = categoryService.createCategory(request.categoryName(), userDetails.getUser());
+            @RequestBody CreateCategoryRequest request) {
+        CategoryDto category = categoryService.createCategory(request.categoryName(), authService.getCurrentUser());
 
         var response = GenericResponse.create(
                 ApplicationConstants.SUCCESS,
@@ -66,11 +66,10 @@ public class CategoryController {
     @PatchMapping("/{id}")
     public ResponseEntity<GenericResponse<CategoryDto>> updateCategory(
             @PathVariable Long id,
-            @RequestBody UpdateCategoryRequest request,
-            @AuthenticationPrincipal CustomUserDetails userDetails) {
+            @RequestBody UpdateCategoryRequest request) {
         CategoryDto categoryDto = categoryService.updateCategory(
                 request.categoryName(),
-                userDetails.getUser(),
+                authService.getCurrentUser(),
                 id
         );
 
@@ -86,9 +85,8 @@ public class CategoryController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<GenericResponse<Void>> deleteCategory(
-            @PathVariable("id") Long id,
-            @AuthenticationPrincipal CustomUserDetails userDetails) {
-        categoryService.deleteCategory(id, userDetails.getUser());
+            @PathVariable("id") Long id) {
+        categoryService.deleteCategory(id, authService.getCurrentUser());
 
         GenericResponse<Void> response = GenericResponse.create(ApplicationConstants.SUCCESS, null, HttpStatus.NO_CONTENT.value());
 
