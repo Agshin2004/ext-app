@@ -35,10 +35,7 @@ public class AnalyticsController {
     public ResponseEntity<GenericResponse<MonthlyInsideDto>> getMonthlyInside(
             @RequestParam("month") @DateTimeFormat(pattern = "yyyy-MM") YearMonth date) {
 
-        var monthlyInside = analyticsService.getMonthlyInside(
-                date
-        );
-
+        var monthlyInside = analyticsService.getMonthlyInside(date);
         var response = GenericResponse.create(ApplicationConstants.SUCCESS, monthlyInside, HttpStatus.OK.value());
 
         return ResponseEntity.status(HttpStatus.OK.value())

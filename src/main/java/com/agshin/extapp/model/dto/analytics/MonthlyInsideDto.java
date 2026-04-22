@@ -4,7 +4,8 @@ import java.math.BigDecimal;
 
 public record MonthlyInsideDto(
         BigDecimal amount,
-        Integer totalExpenses,
-        Integer averageExpenseAmount,
-        Integer largestExpense) {
+        Long totalExpenses,
+        Double averageExpenseAmount,
+        BigDecimal largestExpense,
+        Long categoriesUsed) {
 }

@@ -1,5 +1,6 @@
 package com.agshin.extapp.repositories;
 
+import com.agshin.extapp.model.dto.analytics.MonthlyInsideDto;
 import com.agshin.extapp.model.entities.Expense;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,7 +27,8 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
             """)
     Page<Expense> findByCategory(
             @Param("categoryName") String categoryName,
-            @Param("userId") Long userId
+            @Param("userId") Long userId,
+            Pageable pageable
     );
 
     @Query("""
@@ -58,7 +60,7 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
                 WHERE e.user.id = :userId
                 AND e.expenseDate BETWEEN :start AND :end
             """)
-    int getMonthlyNumberOfExpenses(
+    Integer getMonthlyNumberOfExpenses(
             @Param("userId") Long userId,
             @Param("start") LocalDateTime start,
             @Param("end") LocalDateTime end
@@ -69,7 +71,7 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
                     WHERE e.user.id = :userId
                     AND e.expenseDate BETWEEN :start AND :end
             """)
-    int getAverageExpenseAmount(
+    BigDecimal getAverageExpenseAmount(
             @Param("userId") Long userId,
             @Param("start") LocalDateTime start,
             @Param("end") LocalDateTime end
@@ -80,7 +82,25 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
             WHERE e.user.id = :userId
             AND e.expenseDate BETWEEN  :start AND :end
             """)
-    int getLargestExpense(
+    BigDecimal getLargestExpense(
+            @Param("userId") Long userId,
+            @Param("start") LocalDateTime start,
+            @Param("end") LocalDateTime end
+    );
+
+    @Query("""
+                SELECT new com.agshin.extapp.model.dto.analytics.MonthlyInsideDto(
+                        SUM(e.amount),
+                        COUNT(e),
+                        AVG(e.amount),
+                        MAX(e.amount),
+                        COUNT(e.category)
+                    )
+                        FROM Expense e
+                        WHERE e.user.id = :userId
+                        AND e.expenseDate BETWEEN :start AND :end
+            """)
+    MonthlyInsideDto getMonthlyStats(
             @Param("userId") Long userId,
             @Param("start") LocalDateTime start,
             @Param("end") LocalDateTime end

@@ -20,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -154,7 +155,8 @@ public class ExpenseService {
     }
 
     public List<ExpenseDto> getAllExpensesByCategory(String categoryName) {
-        Page<Expense> byCategory = expenseRepository.findByCategory(categoryName, authService.getCurrentUserId());
+        Pageable pageable = PageRequest.of(0, 10); // page 0, size 10
+        Page<Expense> byCategory = expenseRepository.findByCategory(categoryName, authService.getCurrentUserId(), pageable);
 
         return byCategory.getContent().stream()
                 .map(expenseMapper::toDto)
