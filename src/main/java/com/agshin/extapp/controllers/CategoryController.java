@@ -30,6 +30,8 @@ public class CategoryController {
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "true") boolean asc,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+
         // todo: use AuthService
         PagedResponse<List<CategoryDto>> categoriesForUser = categoryService.getCategoriesForUser(
                 userDetails.getUser(),

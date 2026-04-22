@@ -1,33 +1,40 @@
 package com.agshin.extapp.services;
 
+import com.agshin.extapp.config.CustomUserDetails;
 import com.agshin.extapp.model.entities.User;
 import com.agshin.extapp.repositories.UserRepository;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 @Service
 public class DefaultAuthService implements AuthService {
-    private final UserRepository userRepository;
+    @Override
+    public CustomUserDetails getCurrentPrincipal() {
+        Authentication authentication = getAuthentication();
 
-    public DefaultAuthService(UserRepository userRepository) {
-        this.userRepository = userRepository;
+        if (!authentication.isAuthenticated() || authentication instanceof AnonymousAuthenticationToken) {
+            throw new IllegalStateException("Not authenticated user");
+        }
+
+        Object principal = authentication.getPrincipal();
+
+        if (!(principal instanceof CustomUserDetails customUserDetails)) {
+            throw new IllegalStateException("Unexpected authentication principal: " + principal);
+        }
+
+        return customUserDetails;
     }
 
     @Override
     public User getCurrentUser() {
-        Authentication auth = getAuthentication();
-
-        String email = auth.getName(); // email
-        return userRepository.findByEmail(email)
-                .orElseThrow(() ->
-                        new IllegalStateException("Authentication user not found in DB")
-                );
+        return getCurrentPrincipal().getUser();
     }
 
     @Override
     public Long getCurrentUserId() {
-        return getCurrentUser().getId();
+        return getCurrentPrincipal().getId();
     }
 
 

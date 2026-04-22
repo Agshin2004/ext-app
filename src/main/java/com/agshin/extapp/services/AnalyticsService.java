@@ -37,6 +37,8 @@ public class AnalyticsService {
      * @return {@link MonthlyInsideDto}
      */
     public MonthlyInsideDto getMonthlyInside(YearMonth date) {
+        String email = authService.getCurrentUser().getEmail();
+        System.out.println(email);
         logger.info("Fetching monthly analytics");
         Long currentUserId = authService.getCurrentUserId();
         LocalDateTime start = date.atDay(1).atStartOfDay(); // add day and then time 00:00
