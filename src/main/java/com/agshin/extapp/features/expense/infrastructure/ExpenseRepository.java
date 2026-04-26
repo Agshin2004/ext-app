@@ -1,6 +1,7 @@
 package com.agshin.extapp.features.expense.infrastructure;
 
 import com.agshin.extapp.features.analytics.api.dto.CategoryTotalDto;
+import com.agshin.extapp.features.analytics.api.dto.ExpensePerCategoryDto;
 import com.agshin.extapp.features.analytics.api.dto.MonthlyInsideDto;
 import com.agshin.extapp.features.expense.domain.Expense;
 import org.springframework.data.domain.Page;
@@ -119,6 +120,22 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
                   GROUP BY e.category.categoryName
             """)
     List<CategoryTotalDto> getTotalSpentByCategoryForUserAndPeriod(
+            @Param("userId") Long userId,
+            @Param("start") LocalDateTime start,
+            @Param("end") LocalDateTime end
+    );
+
+    // Expense count per category
+    @Query("""
+            SELECT new com.agshin.extapp.features.analytics.api.dto.ExpensePerCategoryDto(
+                e.category.categoryName, COUNT(e.amount)
+             )
+                FROM Expense e
+                WHERE e.user.id = :userId
+                AND e.expenseDate BETWEEN :start AND :end
+                GROUP BY e.category.categoryName
+            """)
+    List<ExpensePerCategoryDto> getExpenseCountPerCategory(
             @Param("userId") Long userId,
             @Param("start") LocalDateTime start,
             @Param("end") LocalDateTime end

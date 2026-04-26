@@ -9,5 +9,6 @@ public record MonthlyInsideDto(
         Double averageExpenseAmount,
         BigDecimal largestExpense,
         Long categoriesUsed,
-        List<CategoryTotalDto> totalSpentByCategory) {
+        List<CategoryTotalDto> totalSpentByCategory,
+        List<ExpensePerCategoryDto> expensePerCategory) {
 }

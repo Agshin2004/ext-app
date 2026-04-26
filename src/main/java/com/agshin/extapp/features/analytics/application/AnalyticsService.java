@@ -1,5 +1,6 @@
 package com.agshin.extapp.features.analytics.application;
 
+import com.agshin.extapp.features.analytics.api.dto.ExpensePerCategoryDto;
 import com.agshin.extapp.features.category.infrastructure.CategoryRepository;
 import com.agshin.extapp.features.analytics.api.dto.CategoryTotalDto;
 import com.agshin.extapp.features.analytics.api.dto.MonthlyInsideDto;
@@ -18,18 +19,14 @@ import java.util.List;
 
 @Service
 public class AnalyticsService {
-    private final ExpenseMapper expenseMapper;
     private final AuthService authService;
-    private final CategoryRepository categoryRepository;
     Logger logger = LoggerFactory.getLogger(AnalyticsService.class);
 
     private final ExpenseRepository expenseRepository;
 
-    public AnalyticsService(ExpenseRepository expenseRepository, ExpenseMapper expenseMapper, AuthService authService, CategoryRepository categoryRepository) {
+    public AnalyticsService(ExpenseRepository expenseRepository, AuthService authService) {
         this.expenseRepository = expenseRepository;
-        this.expenseMapper = expenseMapper;
         this.authService = authService;
-        this.categoryRepository = categoryRepository;
     }
 
 
@@ -49,7 +46,7 @@ public class AnalyticsService {
         MonthlyInsideDto raw = expenseRepository.getMonthlyStats(currentUserId, start, end);
         List<CategoryTotalDto> totalSpentByCategory =
                 expenseRepository.getTotalSpentByCategoryForUserAndPeriod(currentUserId, start, end);
-
+        List<ExpensePerCategoryDto> expenseCountPerCategory = expenseRepository.getExpenseCountPerCategory(currentUserId, start, end);
 
         // removing nulls
         return new MonthlyInsideDto(
@@ -58,7 +55,8 @@ public class AnalyticsService {
                 raw.averageExpenseAmount() != null ? raw.averageExpenseAmount() : 0,
                 raw.largestExpense() != null ? raw.largestExpense() : BigDecimal.ZERO,
                 raw.categoriesUsed(),
-                totalSpentByCategory
+                totalSpentByCategory,
+                expenseCountPerCategory
         );
     }
 }
