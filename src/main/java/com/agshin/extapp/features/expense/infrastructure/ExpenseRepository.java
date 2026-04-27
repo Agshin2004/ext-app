@@ -112,7 +112,7 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
 
     @Query("""
                 SELECT new com.agshin.extapp.features.analytics.api.dto.CategoryTotalDto(
-                    e.category.categoryName, SUM(e.amount)
+                    e.category.categoryName, SUM(e.amount), COUNT(e.id)
                 ) 
                   FROM Expense e
                   WHERE e.user.id = :userId
@@ -125,19 +125,4 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
             @Param("end") LocalDateTime end
     );
 
-    // Expense count per category
-    @Query("""
-            SELECT new com.agshin.extapp.features.analytics.api.dto.ExpensePerCategoryDto(
-                e.category.categoryName, COUNT(e.amount)
-             )
-                FROM Expense e
-                WHERE e.user.id = :userId
-                AND e.expenseDate BETWEEN :start AND :end
-                GROUP BY e.category.categoryName
-            """)
-    List<ExpensePerCategoryDto> getExpenseCountPerCategory(
-            @Param("userId") Long userId,
-            @Param("start") LocalDateTime start,
-            @Param("end") LocalDateTime end
-    );
 }

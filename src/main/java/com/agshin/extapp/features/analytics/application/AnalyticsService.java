@@ -46,7 +46,7 @@ public class AnalyticsService {
         MonthlyInsideDto raw = expenseRepository.getMonthlyStats(currentUserId, start, end);
         List<CategoryTotalDto> totalSpentByCategory =
                 expenseRepository.getTotalSpentByCategoryForUserAndPeriod(currentUserId, start, end);
-        List<ExpensePerCategoryDto> expenseCountPerCategory = expenseRepository.getExpenseCountPerCategory(currentUserId, start, end);
+//        List<ExpensePerCategoryDto> expenseCountPerCategory = expenseRepository.getExpenseCountPerCategory(currentUserId, start, end);
 
         // removing nulls
         return new MonthlyInsideDto(
@@ -55,8 +55,7 @@ public class AnalyticsService {
                 raw.averageExpenseAmount() != null ? raw.averageExpenseAmount() : 0,
                 raw.largestExpense() != null ? raw.largestExpense() : BigDecimal.ZERO,
                 raw.categoriesUsed(),
-                totalSpentByCategory,
-                expenseCountPerCategory
+                totalSpentByCategory
         );
     }
 }
