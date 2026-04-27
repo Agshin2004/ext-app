@@ -1,10 +1,7 @@
 package com.agshin.extapp.features.analytics.application;
 
-import com.agshin.extapp.features.analytics.api.dto.ExpensePerCategoryDto;
-import com.agshin.extapp.features.category.infrastructure.CategoryRepository;
 import com.agshin.extapp.features.analytics.api.dto.CategoryTotalDto;
 import com.agshin.extapp.features.analytics.api.dto.MonthlyInsideDto;
-import com.agshin.extapp.features.expense.infrastructure.ExpenseMapper;
 import com.agshin.extapp.features.expense.infrastructure.ExpenseRepository;
 import com.agshin.extapp.features.user.application.AuthService;
 import org.slf4j.Logger;
