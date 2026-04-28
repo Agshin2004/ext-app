@@ -9,10 +9,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.YearMonth;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class AnalyticsService {
@@ -43,7 +45,7 @@ public class AnalyticsService {
         MonthlyInsideDto raw = expenseRepository.getMonthlyStats(currentUserId, start, end);
         List<CategoryTotalDto> totalSpentByCategory =
                 expenseRepository.getTotalSpentByCategoryForUserAndPeriod(currentUserId, start, end);
-//        List<ExpensePerCategoryDto> expenseCountPerCategory = expenseRepository.getExpenseCountPerCategory(currentUserId, start, end);
+
 
         // removing nulls
         return new MonthlyInsideDto(
@@ -52,7 +54,23 @@ public class AnalyticsService {
                 raw.averageExpenseAmount() != null ? raw.averageExpenseAmount() : 0,
                 raw.largestExpense() != null ? raw.largestExpense() : BigDecimal.ZERO,
                 raw.categoriesUsed(),
-                totalSpentByCategory
+                totalSpentByCategory,
+                createPercentageShare(totalSpentByCategory)
         );
+    }
+
+    private List<Map<String, Double>> createPercentageShare(List<CategoryTotalDto> results) {
+        BigDecimal grandTotal = results.stream()
+                .map(CategoryTotalDto::totalAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        return results.stream()
+                .map(dto -> {
+                    Double percentage = dto.totalAmount()
+                            .divide(grandTotal, RoundingMode.HALF_UP)
+                            .multiply(BigDecimal.valueOf(100))
+                            .doubleValue();
+                    return Map.of(dto.categoryName(), percentage);
+                }).toList();
     }
 }

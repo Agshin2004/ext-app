@@ -98,6 +98,7 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
                         AVG(e.amount),
                         MAX(e.amount),
                         COUNT(e.category),
+                        null,
                         null
                     )
                         FROM Expense e
@@ -112,7 +113,9 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
 
     @Query("""
                 SELECT new com.agshin.extapp.features.analytics.api.dto.CategoryTotalDto(
-                    e.category.categoryName, SUM(e.amount), COUNT(e.id)
+                    e.category.categoryName,
+                    SUM(e.amount),
+                    COUNT(e.id)
                 ) 
                   FROM Expense e
                   WHERE e.user.id = :userId
@@ -124,5 +127,16 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
             @Param("start") LocalDateTime start,
             @Param("end") LocalDateTime end
     );
+
+//    @Query("""
+//      SELECT new com.agshin.extapp.features.analytics.api.dto.CategoryTotalDto(
+//
+//          )
+//    """)
+//    Object getPercentageShare(
+//            @Param("userId") Long userId,
+//            @Param("start") LocalDateTime start,
+//            @Param("end") LocalDateTime end
+//    );
 
 }
