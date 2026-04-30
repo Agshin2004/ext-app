@@ -1,6 +1,6 @@
 package com.agshin.extapp.features.analytics.api;
 
-import com.agshin.extapp.features.analytics.api.dto.MonthlyInsideDto;
+import com.agshin.extapp.features.analytics.api.dto.ExpenseInsightDto;
 import com.agshin.extapp.features.analytics.application.AnalyticsService;
 import com.agshin.extapp.shared.api.ApplicationConstants;
 import com.agshin.extapp.shared.api.GenericResponse;
@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.time.YearMonth;
+import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/analytics")
@@ -23,11 +23,20 @@ public class AnalyticsController {
         this.analyticsService = analyticsService;
     }
 
-    @GetMapping("/monthly-summary")
-    public ResponseEntity<GenericResponse<MonthlyInsideDto>> getMonthlyInside(
-            @RequestParam("month") @DateTimeFormat(pattern = "yyyy-MM") YearMonth date) {
+    @GetMapping("/expenses/insights")
+    public ResponseEntity<GenericResponse<ExpenseInsightDto>> getMonthlyInside(
+            @RequestParam("startDate")
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+            LocalDate startDate,
 
-        var monthlyInside = analyticsService.getMonthlyInside(date);
+            @RequestParam("endDate")
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+            LocalDate endDate,
+
+            @RequestParam(value = "sortAscending", defaultValue = "true")
+            Boolean sortAscending) {
+
+        var monthlyInside = analyticsService.getExpenseInsights(startDate, endDate, sortAscending);
         var response = GenericResponse.create(ApplicationConstants.SUCCESS, monthlyInside, HttpStatus.OK.value());
 
         return ResponseEntity.status(HttpStatus.OK.value())

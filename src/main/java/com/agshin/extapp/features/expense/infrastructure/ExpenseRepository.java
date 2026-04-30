@@ -1,8 +1,7 @@
 package com.agshin.extapp.features.expense.infrastructure;
 
 import com.agshin.extapp.features.analytics.api.dto.CategoryTotalDto;
-import com.agshin.extapp.features.analytics.api.dto.ExpensePerCategoryDto;
-import com.agshin.extapp.features.analytics.api.dto.MonthlyInsideDto;
+import com.agshin.extapp.features.analytics.api.dto.ExpenseInsightDto;
 import com.agshin.extapp.features.expense.domain.Expense;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -92,12 +91,12 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
     );
 
     @Query("""
-                SELECT new com.agshin.extapp.features.analytics.api.dto.MonthlyInsideDto(
+                SELECT new com.agshin.extapp.features.analytics.api.dto.ExpenseInsightDto(
                         SUM(e.amount),
                         COUNT(e),
                         AVG(e.amount),
                         MAX(e.amount),
-                        COUNT(e.category),
+                        COUNT(DISTINCT e.category.categoryName),
                         null,
                         null
                     )
@@ -105,7 +104,7 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
                         WHERE e.user.id = :userId
                         AND e.expenseDate BETWEEN :start AND :end
             """)
-    MonthlyInsideDto getMonthlyStats(
+    ExpenseInsightDto getStatsForPeriod(
             @Param("userId") Long userId,
             @Param("start") LocalDateTime start,
             @Param("end") LocalDateTime end
@@ -116,7 +115,7 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
                     e.category.categoryName,
                     SUM(e.amount),
                     COUNT(e.id)
-                ) 
+                )
                   FROM Expense e
                   WHERE e.user.id = :userId
                   AND e.expenseDate BETWEEN :start AND :end
@@ -127,16 +126,5 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
             @Param("start") LocalDateTime start,
             @Param("end") LocalDateTime end
     );
-
-//    @Query("""
-//      SELECT new com.agshin.extapp.features.analytics.api.dto.CategoryTotalDto(
-//
-//          )
-//    """)
-//    Object getPercentageShare(
-//            @Param("userId") Long userId,
-//            @Param("start") LocalDateTime start,
-//            @Param("end") LocalDateTime end
-//    );
 
 }

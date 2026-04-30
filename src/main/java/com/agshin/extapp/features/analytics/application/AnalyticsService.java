@@ -1,7 +1,7 @@
 package com.agshin.extapp.features.analytics.application;
 
 import com.agshin.extapp.features.analytics.api.dto.CategoryTotalDto;
-import com.agshin.extapp.features.analytics.api.dto.MonthlyInsideDto;
+import com.agshin.extapp.features.analytics.api.dto.ExpenseInsightDto;
 import com.agshin.extapp.features.expense.infrastructure.ExpenseRepository;
 import com.agshin.extapp.features.user.application.AuthService;
 import org.slf4j.Logger;
@@ -10,9 +10,10 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.YearMonth;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -30,25 +31,46 @@ public class AnalyticsService {
 
 
     /**
-     * Get all monthly expenses.
+     * Gets monthly expense analytics for the given month.
      *
-     * @param date
-     * @return {@link MonthlyInsideDto}
+     * @param startDate     the year and month to fetch analytics for
+     * @param sortAscending whether to sort results in ascending order
+     * @return the monthly analytics data
      */
-    public MonthlyInsideDto getMonthlyInside(YearMonth date) {
-        logger.info("Fetching monthly analytics");
-
+    public ExpenseInsightDto getExpenseInsights(LocalDate startDate, LocalDate endDate, boolean sortAscending) {
         Long currentUserId = authService.getCurrentUserId();
-        LocalDateTime start = date.atDay(1).atStartOfDay(); // add day and then time 00:00
-        LocalDateTime end = date.atEndOfMonth().atTime(LocalTime.MAX); // last day of month and max time 23:59:59
+        logger.info("Fetching analytics from {} to {}, for {}", startDate, endDate, currentUserId);
 
-        MonthlyInsideDto raw = expenseRepository.getMonthlyStats(currentUserId, start, end);
-        List<CategoryTotalDto> totalSpentByCategory =
-                expenseRepository.getTotalSpentByCategoryForUserAndPeriod(currentUserId, start, end);
+        LocalDateTime start = startDate.atStartOfDay();
+        LocalDateTime end = endDate.atTime(LocalTime.MAX); // last day of month and max time 23:59:59
+
+        ExpenseInsightDto raw = expenseRepository.getStatsForPeriod(
+                currentUserId,
+                start,
+                end
+        );
+
+        List<CategoryTotalDto> totalSpentByCategory = expenseRepository.getTotalSpentByCategoryForUserAndPeriod(
+                        currentUserId,
+                        start,
+                        end
+                );
+
+
+
+        if (sortAscending) {
+            totalSpentByCategory.sort(
+                    Comparator.comparing(CategoryTotalDto::totalAmount).reversed()
+            );
+        } else {
+            totalSpentByCategory.sort(
+                    Comparator.comparing(CategoryTotalDto::totalAmount)
+            );
+        }
 
 
         // removing nulls
-        return new MonthlyInsideDto(
+        return new ExpenseInsightDto(
                 raw.amount() != null ? raw.amount() : BigDecimal.ZERO,
                 raw.totalExpenses(),
                 raw.averageExpenseAmount() != null ? raw.averageExpenseAmount() : 0,
