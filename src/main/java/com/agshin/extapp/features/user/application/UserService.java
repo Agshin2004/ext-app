@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -59,7 +60,7 @@ public class UserService {
 
         userRepository.findByUsername(username)
                 .ifPresent(user -> {
-                    throw new DataExistsException("Email already exists");
+                    throw new DataExistsException("Username already exists");
                 });
 
         User user = userMapper.toEntity(email, username, password);
@@ -73,16 +74,21 @@ public class UserService {
     }
 
     public UserResponse getJwtForCreds(String email, String password) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new DataNotFoundException("User with email not found: " + email));
+        Optional<User> userOpt = userRepository.findByEmail(email);
 
-        if (!passwordEncoder.matches(password, user.getPassword())) {
-            throw new UnauthorizedException("Passwords do not match");
+        String hashToCheck = userOpt.isPresent()
+                ? userOpt.get().getPassword()
+                : "$2a$10$FakeHashForTimingAttackProtection";
+
+        boolean matches = passwordEncoder.matches(password, hashToCheck);
+
+        if (userOpt.isEmpty() || !matches) {
+            throw new DataNotFoundException("User not found");
         }
 
-        String jwt = jwtUtils.generateToken(user);
+        String jwt = jwtUtils.generateToken(userOpt.get());
 
-        return userMapper.toResponse(user, jwt);
+        return userMapper.toResponse(userOpt.get(), jwt);
     }
 
     public void forgotPassword(@Email String email) {

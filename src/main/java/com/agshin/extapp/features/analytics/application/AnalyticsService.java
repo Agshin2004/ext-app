@@ -20,7 +20,7 @@ import java.util.Map;
 @Service
 public class AnalyticsService {
     private final AuthService authService;
-    Logger logger = LoggerFactory.getLogger(AnalyticsService.class);
+    private static final Logger logger = LoggerFactory.getLogger(AnalyticsService.class);
 
     private final ExpenseRepository expenseRepository;
 

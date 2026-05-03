@@ -1,5 +1,6 @@
 package com.agshin.extapp.shared.config;
 
+import com.agshin.extapp.shared.security.CustomAuthenticationEntryPoint;
 import com.agshin.extapp.shared.security.filter.AdminFilter;
 import com.agshin.extapp.shared.security.filter.IsUserApprovedFilter;
 import com.agshin.extapp.shared.security.filter.JwtRequestFilter;
@@ -19,12 +20,23 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 public class SecurityConfig {
 
-    @Autowired
-    private JwtRequestFilter jwtRequestFilter;
-    @Autowired
-    private AdminFilter adminFilter;
-    @Autowired
-    private IsUserApprovedFilter userApprovedFilter;
+    private final JwtRequestFilter jwtRequestFilter;
+    private final AdminFilter adminFilter;
+    private final IsUserApprovedFilter userApprovedFilter;
+    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+
+
+    public SecurityConfig(
+            AdminFilter adminFilter,
+            JwtRequestFilter jwtRequestFilter,
+            IsUserApprovedFilter userApprovedFilter,
+            CustomAuthenticationEntryPoint customAuthenticationEntryPoint
+    ) {
+        this.adminFilter = adminFilter;
+        this.jwtRequestFilter = jwtRequestFilter;
+        this.userApprovedFilter = userApprovedFilter;
+        this.customAuthenticationEntryPoint = customAuthenticationEntryPoint;
+    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -55,7 +67,7 @@ public class SecurityConfig {
                             response.setContentType("application/json");
                             response.setStatus(HttpStatus.FORBIDDEN.value());
                             response.getWriter().write("{\"Message\"" + accessDeniedException.getMessage() + "\"}");
-                        }));
+                        }).authenticationEntryPoint(customAuthenticationEntryPoint));
 
         return http.build();
     }

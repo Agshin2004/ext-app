@@ -51,7 +51,7 @@ public class UserController {
                 HttpStatus.OK.value()
         );
 
-        return ResponseEntity.status(HttpStatus.CREATED.value()).body(genericResponse);
+        return ResponseEntity.status(HttpStatus.OK.value()).body(genericResponse);
     }
 
     // generate token, send email
