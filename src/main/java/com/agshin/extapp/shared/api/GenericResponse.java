@@ -8,11 +8,31 @@ public class GenericResponse<P> {
     private P body;
     private Integer statusCode;
     private LocalDateTime timestamp;
+    private String correlationId;
 
     private GenericResponse() {
     }
 
-    public GenericResponse(String message, P body, Integer statusCode, LocalDateTime timestamp) {
+    public GenericResponse(
+            String message,
+            P body,
+            Integer statusCode,
+            LocalDateTime timestamp,
+            String correlationId
+    ) {
+        this.message = message;
+        this.body = body;
+        this.statusCode = statusCode;
+        this.timestamp = timestamp;
+        this.correlationId = correlationId;
+    }
+
+    public GenericResponse(
+            String message,
+            P body,
+            Integer statusCode,
+            LocalDateTime timestamp
+    ) {
         this.message = message;
         this.body = body;
         this.statusCode = statusCode;
@@ -25,6 +45,23 @@ public class GenericResponse<P> {
             Integer statusCode
     ) {
         return new GenericResponse<>(message, body, statusCode, LocalDateTime.now());
+    }
+
+    public static <T> GenericResponse<T> create(
+            String message,
+            T body,
+            Integer statusCode,
+            String correlationId
+    ) {
+        return new GenericResponse<>(message, body, statusCode, LocalDateTime.now(), correlationId);
+    }
+
+    public String getCorrelationId() {
+        return correlationId;
+    }
+
+    public void setCorrelationId(String correlationId) {
+        this.correlationId = correlationId;
     }
 
     public String getMessage() {

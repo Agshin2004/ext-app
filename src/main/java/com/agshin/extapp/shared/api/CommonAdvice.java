@@ -8,6 +8,7 @@ import com.agshin.extapp.shared.exception.ValidationException;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -40,8 +41,10 @@ public class CommonAdvice {
 
     private GenericResponse<String> buildResponse(Exception ex, HttpStatus status) {
         String msg = ApplicationConstants.ERROR;
-        return GenericResponse.create(msg, getMessage(ex), status.value());
+        String requestId = MDC.get("requestId");
+        return GenericResponse.create(msg, getMessage(ex), status.value(), requestId);
     }
+
 
     @ExceptionHandler(UnauthorizedException.class)
     public ResponseEntity<GenericResponse<String>> handleUnauthorizedException(UnauthorizedException ex) {

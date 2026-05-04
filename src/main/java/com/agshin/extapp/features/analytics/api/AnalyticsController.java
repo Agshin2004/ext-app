@@ -4,6 +4,7 @@ import com.agshin.extapp.features.analytics.api.dto.ExpenseInsightDto;
 import com.agshin.extapp.features.analytics.application.AnalyticsService;
 import com.agshin.extapp.shared.api.ApplicationConstants;
 import com.agshin.extapp.shared.api.GenericResponse;
+import com.agshin.extapp.shared.exception.DataNotFoundException;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,7 +36,6 @@ public class AnalyticsController {
 
             @RequestParam(value = "sortAscending", defaultValue = "true")
             Boolean sortAscending) {
-
         var monthlyInside = analyticsService.getExpenseInsights(startDate, endDate, sortAscending);
         var response = GenericResponse.create(ApplicationConstants.SUCCESS, monthlyInside, HttpStatus.OK.value());
 
