@@ -11,6 +11,14 @@ spring:
 logging:
   level:
     root: WARN
+    org.springframework: warn
+    org.hibernate: warn
+    org.apache.tomcat: warn
+    com.zaxxer.hikari: warn
+    com.agshin: info
+  file:
+    path: logs
+    name: ext-app.log
 
 security:
   jwt:

@@ -44,11 +44,7 @@ public class AnalyticsService {
         LocalDateTime start = startDate.atStartOfDay();
         LocalDateTime end = endDate.atTime(LocalTime.MAX); // last day of month and max time 23:59:59
 
-        ExpenseInsightDto raw = expenseRepository.getStatsForPeriod(
-                currentUserId,
-                start,
-                end
-        );
+        ExpenseInsightDto raw = expenseRepository.getStatsForPeriod(currentUserId, start, end);
 
         List<CategoryTotalDto> totalSpentByCategory = expenseRepository.getTotalSpentByCategoryForUserAndPeriod(
                         currentUserId,
