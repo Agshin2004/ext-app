@@ -42,6 +42,9 @@ spring:
       ddl-auto: none
     show-sql: true
 
+  cache:
+    type: caffeine
+    cache-names: categories,expenses # todo: add more
 
 logging:
   level:
