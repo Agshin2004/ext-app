@@ -29,3 +29,10 @@ file:
 dev:
   admin:
     enabled: true
+
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics

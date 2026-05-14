@@ -58,6 +58,7 @@ public class SecurityConfig {
                                 "/swagger-resources/**",
                                 "/webjars/**"
                         ).permitAll()
+                        .requestMatchers("/actuator/**").permitAll()  // TODO: change
                         .anyRequest().authenticated()
                 ).addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterAfter(userApprovedFilter, JwtRequestFilter.class)

@@ -17,3 +17,5 @@ databaseChangeLog:
       file: db/changelog/008-create-file-metadata-table.yaml
   - include:
       file: db/changelog/009-add-next-run-date-column-to-recurring-expenses.yaml
+  - include:
+      file: db/changelog/010-create-roles-table.sql

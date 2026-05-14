@@ -41,18 +41,28 @@ public class AnalyticsService {
         Long currentUserId = authService.getCurrentUserId();
         logger.info("Fetching analytics from {} to {}, for {}", startDate, endDate, currentUserId);
 
-        LocalDateTime start = startDate.atStartOfDay();
-        LocalDateTime end = endDate.atTime(LocalTime.MAX); // last day of month and max time 23:59:59
 
-        ExpenseInsightDto raw = expenseRepository.getStatsForPeriod(currentUserId, start, end);
+        LocalDate start;
+        LocalDate end;
+        if (endDate == null) {
+            start = startDate.withDayOfMonth(1);
+            end = startDate.withDayOfMonth(start.lengthOfMonth());
+        } else {
+            start = startDate;
+            end = endDate;
+        }
+
+        LocalDateTime startDateTime = start.atStartOfDay();
+        LocalDateTime endDateTime = end.atTime(LocalTime.MAX); // include expenses 23:59:59
+
+        logger.info("end: {}", end);
+        ExpenseInsightDto raw = expenseRepository.getStatsForPeriod(currentUserId, startDateTime, endDateTime);
 
         List<CategoryTotalDto> totalSpentByCategory = expenseRepository.getTotalSpentByCategoryForUserAndPeriod(
-                        currentUserId,
-                        start,
-                        end
-                );
-
-
+                currentUserId,
+                startDateTime,
+                endDateTime
+        );
 
         if (sortAscending) {
             totalSpentByCategory.sort(

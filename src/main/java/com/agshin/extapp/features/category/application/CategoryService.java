@@ -12,6 +12,7 @@ import com.agshin.extapp.shared.exception.DataNotFoundException;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -63,7 +64,10 @@ public class CategoryService {
         return categoryMapper.toDto(category);
     }
 
+    @Cacheable(value = "categories", key = "#user.USER_ID")
     public PagedResponse<List<CategoryDto>> getCategoriesForUser(User user, int page, int size, boolean asc) {
+        logger.info("Getting categories for user: {}", user);
+
         Sort sort = asc
                 ? Sort.by("id").ascending()
                 : Sort.by("id").descending();
